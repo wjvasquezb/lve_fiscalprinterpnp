@@ -1,5 +1,6 @@
 package ve.com.as.model;
 
+import java.sql.ResultSet;
 import java.util.Properties;
 
 public class MLVEFiscalPResources extends X_LVE_FiscalPResources {
@@ -8,6 +9,10 @@ public class MLVEFiscalPResources extends X_LVE_FiscalPResources {
 			String trxName) {
 		super(ctx, LVE_FiscalPResources_ID, trxName);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public MLVEFiscalPResources(Properties ctx, ResultSet rs, String trxName) {
+		super(ctx, rs, trxName);
 	}
 
 	/**
