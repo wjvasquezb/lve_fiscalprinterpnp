@@ -114,7 +114,7 @@ try {
 }
 
 String ruta = "C:/IntTFHKA/";
-File spooler = new File(ruta+"selectrapos.txt");
+File spooler = new File(ruta+"iDempiereSpooler.txt");
 Writer	salida = null;
 try {
     salida = new BufferedWriter(new FileWriter(spooler));
@@ -122,127 +122,63 @@ try {
     JOptionPane.showMessageDialog(null, "Error al leer archivo: " + spooler + "\n" + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
 }
 
-//CASO DEVOLUCION
-if("1".equals(ticket.getTicketType().toString())){	
-    	numero_factura = javax.swing.JOptionPane.showInputDialog(null, "Introduzca el código de la Factura:", "Nota de Crédito - Factura", JOptionPane.WARNING_MESSAGE);
-		serial_impresora = javax.swing.JOptionPane.showInputDialog(null, "Introduzca el serial de la Impresora:", "Nota de Crédito - Impresora", JOptionPane.WARNING_MESSAGE);
-    	razon_social = ticket.getCustomer().getName().toString().toUpperCase();
-		rif_ci = ticket.getCustomer().getTaxid().toString();
-	if ( numero_factura != null && serial_impresora != null) { 
-       	 // the user pressed OK 
-		salida.write("i01NOMBRE/RAZON SOCIAL: " + ticket.getCustomer().getName().toString().toUpperCase() + "\n");
-		salida.write("i02CI/RIF: " + ticket.getCustomer().getTaxid().toString() + "\n");
-		salida.write("i03FACTURA: " + numero_factura.toUpperCase() + " IMPRESORA: " + serial_impresora.toUpperCase() + "\n");
-		ticket.setFiscalNumber(numero_factura.toUpperCase());
-		ticket.setFiscalSerial(serial_impresora.toUpperCase());
+salida.write("i01NOMBRE/RAZON SOCIAL: " + BPartner.getName().toUpperCase() + "\n");
+salida.write("i02CI/RIF: " + BPartner.getTaxID().toUpperCase() + "\n");
+
+controlNumber=Invoice.get_Value("LVE_controlNumber");	
+salida.write("@CAJERO: " + SalesRep.toUpperCase() + " - Nro Control: " + controlNumber + "\n");
+
+NumberFormat df1 = new DecimalFormat("#0.00"); 
+NumberFormat df2 = new DecimalFormat("#0.000"); 
+
+for (MInvoiceLine invoiceLine : invoiceLines) {
+	producto_iva="";
+	producto_precio="";
+	producto="";
+	MTax tax = new MTax(getCtx, invoiceLine.getC_Tax_ID(), get_TrxName);
+	
+	if(tax.getRate().compareTo(new BigDecimal(0.0))) {
+		producto_iva = " ";
 	}
-
-	NumberFormat df1 = new DecimalFormat("#0.00"); 
-	NumberFormat df2 = new DecimalFormat("#0.000"); 
-	lineas = ticket.getLinesCount();
-
-	for (int i = 0; i < lineas; i++) {
-		producto_iva="";
-		producto_precio="";
-		producto="";
-		
-		if(ticket.getLine(i).getTaxRate().toString().equals("0.0")){
-			producto_iva = "0";
-		}
-		if (ticket.getLine(i).getTaxRate().toString().equals("0.12")){
-			producto_iva = "1";
-		}
-		if (ticket.getLine(i).getTaxRate().toString().equals("0.08")){
-			producto_iva = "2";
-		}		
-
-		precio = df1.format(ticket.getLine(i).getPrice()).toString();
-		//String precios[] = precio.split(".");
-		producto_precio = precio.replace(".","");		
-		producto_precio = strpad(producto_precio.replace(",",""), "0", 10, "STR_PAD_LEFT");
-		//salida.write(producto_precio + "\n");	
-
-		cantidad1 = df2.format(ticket.getLine(i).getMultiply()).toString();
-		//String cantidades[] = cantidad.split(".");
-		cantidad2 = cantidad1.replace(".","");
-		producto_cantidad = cantidad2.replace("-","");
-		producto_cantidad = strpad(producto_cantidad.replace(",",""), "0", 8, "STR_PAD_LEFT");
-		//salida.write(producto_cantidad + "\n");
-		
-		producto = ticket.getLine(i).getProductName().toString().toUpperCase();
-		if (producto.length() > 40) {
-			producto = producto.substring(0,40);
-		}
-		
-		salida.write("d" + producto_iva + producto_precio.replace(",","") + producto_cantidad.replace(",","") + producto + "\n" );
+	if (tax.getRate().compareTo(new BigDecimal(12))) {
+		producto_iva = "!";getPriceActual()
 	}
+	if (tax.getRate().compareTo(new BigDecimal)(8))) {
+		producto_iva = "\"";
+	}		
 
-	// Se agregan al Spooler los pagos de la factura
-	addPayments(12);
-}
+	precio = df1.format(invoiceLine.getPriceActual()).toString();
+	//String precios[] = precio.split(".");
+	producto_precio = precio.replace(".","");
+	producto_precio = strpad(producto_precio.replace(",",""), "0", 10, "STR_PAD_LEFT");
+	//salida.write(producto_precio + "\n");	
 
-//CASO VENTA DIRECTA
-if ("0".equals(String.valueOf(ticket.getTicketType()))) {
-	if(ticket.printCustomer().equals("")) {
-		salida.write("iS*" + "GENERAL\n");
-		salida.write("iR*" + "00000000\n");		
-	}
-	else {
-		salida.write("i01NOMBRE/RAZON SOCIAL: " + ticket.getCustomer().getName().toString().toUpperCase() + "\n");
-		salida.write("i02CI/RIF: " + ticket.getCustomer().getTaxid().toString() + "\n");
+	cantidad = df2.format(invoiceLine.getQtyInvoiced()).toString();
+	//String cantidades[] = cantidad.split(".");
+	producto_cantidad = cantidad.replace(".","");
+	producto_cantidad = strpad(producto_cantidad.replace(",",""), "0", 8, "STR_PAD_LEFT");
+	//salida.write(producto_cantidad + "\n");
+	
+	if (invoiceLine.getM_Product_ID() != 0) {
+	MProduct product = new MProduct(getCtx(), invoiceLine.getM_Product_ID(), get_TrxName());
+	producto = product.getName().toUpperCase();
+	} else 
+		producto = invoiceLine.getDescription();
+	if (producto.length() > 40) {
+		producto = producto.substring(0,40);
 	}
 	
-	recibo=ticket.printId().toString();	
-	salida.write("@CAJERO: " + ticket.getUser().getName().toString().toUpperCase() + " - RECIBO: " + recibo + "\n");
-	
-	NumberFormat df1 = new DecimalFormat("#0.00"); 
-	NumberFormat df2 = new DecimalFormat("#0.000"); 
-	lineas = ticket.getLinesCount();
-
-	for (int i = 0; i < lineas; i++) {
-		producto_iva="";
-		producto_precio="";
-		producto="";
-		
-		if(ticket.getLine(i).getTaxRate().toString().equals("0.0")) {
-			producto_iva = " ";
-		}
-		if (ticket.getLine(i).getTaxRate().toString().equals("0.12")) {
-			producto_iva = "!";
-		}
-		if (ticket.getLine(i).getTaxRate().toString().equals("0.08")) {
-			producto_iva = "\"";
-		}		
-
-		precio = df1.format(ticket.getLine(i).getPrice()).toString();
-		//String precios[] = precio.split(".");
-		producto_precio = precio.replace(".","");
-		producto_precio = strpad(producto_precio.replace(",",""), "0", 10, "STR_PAD_LEFT");
-		//salida.write(producto_precio + "\n");	
-
-		cantidad = df2.format(ticket.getLine(i).getMultiply()).toString();
-		//String cantidades[] = cantidad.split(".");
-		producto_cantidad = cantidad.replace(".","");
-		producto_cantidad = strpad(producto_cantidad.replace(",",""), "0", 8, "STR_PAD_LEFT");
-		//salida.write(producto_cantidad + "\n");
-		
-		producto = ticket.getLine(i).getProductName().toString().toUpperCase();
-		if (producto.length() > 40) {
-			producto = producto.substring(0,40);
-		}
-		
-		salida.write(producto_iva + producto_precio.replace(",","") + producto_cantidad.replace(",","") + producto + "\n" );
-	}
-
-	salida.write("3\n");
-
-	// Se agregan al Spooler los pagos de la factura
-	addPayments(13);
+	salida.write(producto_iva + producto_precio.replace(",","") + producto_cantidad.replace(",","") + producto + "\n" );
 }
+
+salida.write("3\n");
+
+// Se agregan al Spooler los pagos de la factura
+//addPayments(13);
 
 salida.close();
 
-String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/selectrapos.txt)";
+String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
 executeSpooler(spoolerBixolon);
 
 boolean isCash = false;
@@ -304,7 +240,7 @@ if(!"".equals(line) && line != null) {
 			addPayments(12);
 		if ("0".equals(String.valueOf(ticket.getTicketType())))
 			addPayments(13);
-		spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/selectrapos.txt)";
+		spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
 		executeSpooler(spoolerBixolon);
 		if(file.exists()) {
 			in = new BufferedReader(fileR);
