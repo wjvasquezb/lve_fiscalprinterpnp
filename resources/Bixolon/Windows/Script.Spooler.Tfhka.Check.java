@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
  */
 
 String conected = "TRUE";
-String ready = "TRUE";
+Object result = "TRUE";
 String status = "4";
 String error = "0";
 String path = "C:\\IntTFHKA\\";
@@ -39,13 +39,13 @@ try {
     if(!"TRUE".equals(conected.trim())) {
         System.out.println("Impresora Bixolon Desconectada o Apagada - Respuesta: " + conected.trim());
         JOptionPane.showMessageDialog(null, "Impresora Bixolon Desconectada o Apagada \nRESPUESTA: " + conected.trim(), "PRECAUCIÓN", JOptionPane.WARNING_MESSAGE);
-        ready = "FALSE";
+        result = "FALSE";
     }
 
     if(!"4".equals(status.trim()) && "TRUE".equals(conected.trim())) {
         System.out.println("Impresora Bixolon No está lista - Estatus: " + status.trim());
         if("5".equals(status.trim())) {
-            ready = "FALSE";
+            result = "FALSE";
             int selection = JOptionPane.showConfirmDialog(null, "Impresora Bixolon presenta Estatus 5, No termino de imprimir el Último Documento "
                 + "\n¿Desea Completar impresión?", "Estatus Bixolon", JOptionPane.YES_NO_OPTION);
             if(selection == 1) {
@@ -81,7 +81,7 @@ try {
                             System.out.println("--------------------    SE TERMINA DE IMPRIMIR FACTURA    --------------------");
                             checkStatus();
                             if("TRUE".equals(conected.trim()) && "4".equals(status.trim()) && "0".equals(error.trim())) {
-                                ready = "TRUE";
+                                result = "TRUE";
                                 System.out.println("Impresora Conectada, y sin errores.");
                             }
                         } else {
@@ -96,14 +96,14 @@ try {
         }
         } else {
             JOptionPane.showMessageDialog(null, "Impresora Bixolon No está lista \nESTATUS: " + status.trim(), "ERROR - STATUS " + status.trim(), JOptionPane.ERROR_MESSAGE);
-            ready = "FALSE";
+            result = "FALSE";
         }
     }
 
     if(!"0".equals(error.trim()) && "TRUE".equals(conected.trim())) {
         System.out.println("Impresora Bixolon presenta error N° " + error.trim());
         JOptionPane.showMessageDialog(null, "Impresora Bixolon presenta error N° " + error.trim() + "\nERROR: " + error.trim(), JOptionPane.ERROR_MESSAGE);
-        ready = "FALSE";
+        result = "FALSE";
     }
 
     /* Delete "Status_Error" after Check Status. - 07/2016
@@ -126,4 +126,4 @@ try {
 } catch (InterruptedException ex) {
     JOptionPane.showMessageDialog(null, "Error al chequear status impresora Bixolon\n" + ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
 }
-return ready.trim();
+return result;
