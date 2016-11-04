@@ -506,13 +506,14 @@ public class MInvoiceFP extends MInvoice {
 						result = executeScript(rule.get_ID());
 					} else
 						result = "No ha seleccionado regla para Impresora " + printer.getName();
-					info.append(result);
-					if (result == null) {
-						result = "Ejecución de Regla " + rule.getName() + " ha retornado null";
-						m_processMsg = info.toString().trim();
+					if (result == null || result == "FALSE") {
 						setProcessed(false);
+						info.append(" Error con Impresora Fiscal, no se puede completar Documento ");
+						info.append(" Respuesta Impresora Fiscal: " + result);
+						m_processMsg = info.toString().trim();
 						return DocAction.STATUS_Invalid;
-					}
+					} else 
+						info.append(" - Respuesta Impresora Fiscal: " + result);
 				}
 			}
 		}
@@ -526,7 +527,7 @@ public class MInvoiceFP extends MInvoice {
 	
 	public Object executeScript(int AD_Rule_ID) {
 		MRule rule = MRule.get(getCtx(), AD_Rule_ID);
-		Object result = null;
+		Object resultScript = null;
 		Object m_description = null;
 		String errorMsg = "";
 		try {
@@ -545,13 +546,12 @@ public class MInvoiceFP extends MInvoice {
 
 				throw ex;
 			}
-			result = engine.getResult(false);
-
+			resultScript = engine.getResult(false);
 		} catch (Exception e) {
 			throw new AdempiereException("Execution error - @AD_Rule_ID@="
 					+ rule.getValue() + " \n " + errorMsg);
 		}
-		return result;
+		return resultScript;
 	}
 	
 }

@@ -13,5 +13,3 @@ Service-Component: OSGI-INF/ProcessFactory.xml,
 Require-Bundle: org.adempiere.base;bundle-version="3.1.0",
  org.adempiere.plugin.utils;bundle-version="3.1.0",
  org.adempiere.base.process;bundle-version="3.1.0"
-Export-Package: src.ve.com.as.model,
- src.ve.com.as.process
