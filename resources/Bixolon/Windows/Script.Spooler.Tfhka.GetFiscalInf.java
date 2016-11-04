@@ -12,7 +12,8 @@ import com.openbravo.pos.ticket.TicketInfo;
  * Script Java que permite obtener Datos Impresora Fiscal Bixolon.
  */
 
-String fiscalNumber = "", fiscalSerial = "", creditNote = "", fiscalInf = "";
+String fiscalNumber = "", fiscalSerial = "", creditNote = "";
+Object result = "";
 String path = "C:\\IntTFHKA\\";
 String spoolerBixolon = "";
 String line = "";
@@ -43,24 +44,24 @@ try {
         return "";
     }
     in.close();
-    if (ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
+//    if (ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
         fiscalNumber = line.substring(21,29);
         System.out.println("Número de Factura Fiscal: " + fiscalNumber);
-        ticket.setFiscalNumber(fiscalNumber);
+//        ticket.setFiscalNumber(fiscalNumber);
         fiscalSerial = line.substring(66, 76);
         System.out.println("Serial de la Impresora Fiscal: " + fiscalSerial);
-        ticket.setFiscalSerial(fiscalSerial);
-    } else if (ticket.getTicketType() == TicketInfo.RECEIPT_REFUND) {
-        fiscalNumber = ticket.getFiscalNumber() == null ? "" : ticket.getFiscalNumber();
+//      ticket.setFiscalSerial(fiscalSerial);
+//    } else if (ticket.getTicketType() == TicketInfo.RECEIPT_REFUND) {
+//       fiscalNumber = ticket.getFiscalNumber() == null ? "" : ticket.getFiscalNumber();
         System.out.println("Número de Factura Fiscal: " + fiscalNumber);
-        fiscalSerial = ticket.getFiscalSerial() == null ? "" : ticket.getFiscalSerial();
+//        fiscalSerial = ticket.getFiscalSerial() == null ? "" : ticket.getFiscalSerial();
         System.out.println("Serial de la Impresora Fiscal: " + fiscalSerial);
         creditNote = line.substring(88, 96);
         System.out.println("Número de Nota de Crédito: " + creditNote);
-        ticket.setFiscalNumber(fiscalNumber + "_NC" + creditNote);
-    }
-    fiscalInf = fiscalSerial + "_" + fiscalNumber + ("".equals(creditNote) ? "" : "_NC" + creditNote);
-    System.out.println("INFORMACIÓN FISCAL: " + fiscalInf);
+  //      ticket.setFiscalNumber(fiscalNumber + "_NC" + creditNote);
+//    }
+    result = fiscalSerial + "_" + fiscalNumber + ("".equals(creditNote) ? "" : "_NC" + creditNote);
+    System.out.println("INFORMACIÓN FISCAL: " + result);
 } catch (FileNotFoundException ex) {
     JOptionPane.showMessageDialog(null, "Error al verificar Datos de la Impresora Fiscal\n" + ex);
     return "";
@@ -71,4 +72,4 @@ try {
     JOptionPane.showMessageDialog(null, "Error al verificar Datos de la Impresora Fiscal\n" + ex);
     return "";
 }
-return fiscalInf;
+return result;
