@@ -6,18 +6,13 @@ import javax.swing.JOptionPane;
 
 String ruta = "C:/IntTFHKA/";
 
-File spooler = new File(ruta+"selectrapos.txt");
-Writer  salida = new BufferedWriter(new FileWriter(spooler));
-salida.write("I0X\n");
-salida.close();
-
 try {
   //String spoolerBixolon = ruta+"cmd.bat";
   //String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/selectrapos.txt)";    
   String spoolerBixolon = ruta+"IntTFHKA.exe SendCmd(I0X)";
   Runtime.getRuntime().exec(spoolerBixolon,null,new File(ruta)).waitFor();
  } catch (IOException eF) {
-     // Excepciones si hay algÃºn problema al arrancar el ejecutable o al leer su salida.
+     // Excepciones si hay algún problema al arrancar el ejecutable o al leer su salida.
     eF.printStackTrace();
     JOptionPane.showMessageDialog(null, "Error al Imprimir Reporte X \n" + eF);
  } catch (InterruptedException ex) {
@@ -27,7 +22,7 @@ try {
 FileReader file = new FileReader(ruta+"Status_Error.txt");
 BufferedReader in = new BufferedReader(file);
 String line = in.readLine();  
-String status = "FALSE";
+Object result = "FALSE";
 in.close();
 
 System.out.println("Respuesta de la Impresora Fiscal Bixolon (Retorno, Status, Error): " + line);
@@ -35,9 +30,9 @@ System.out.println("Respuesta de la Impresora Fiscal Bixolon (Retorno, Status, E
 if(!"".equals(line) && line != null) {
 	String errores = line.split("\\t")[2];
 	if("0".equals(errores.trim()))
-		status = "TRUE";
+		result = "TRUE";
 	else
-		status = "FALSE_" + line;
+		result = "FALSE_" + line;
 }
 
-return status;
+return result;
