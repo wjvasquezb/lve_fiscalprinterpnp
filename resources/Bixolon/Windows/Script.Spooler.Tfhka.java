@@ -40,83 +40,83 @@ public String strpad(String dato, String cformat, int espacio, String pad_type) 
 }
 
 // Se agregan al Spooler los pagos de la factura
-// public void addPayments(int espacio) {
-// 	double efectivo=0.0;
-// 	double deb=0.0;
-// 	double tc=0.0;
-// 	double paper=0.0;
-// 	double dif=0.0;
-// 	double total_pago=0.0;
-// 	double total_ticket=0.0;
-// 	for (int j = 0; j < ticket.payments.size(); j++) {
-// 	//foreach (PaymentInfo p : ticket.payments)
-// 		PaymentInfo p = ticket.payments.get(j) ;
-// 	   	if ("cash".equals(p.getName() )) {
-//           	efectivo=efectivo+p.getPaid();
-//      	}   	     	
-//    	  	else if ("magcard".equals(p.getName() )) {
-//         	tc=tc+p.getTotal();
-//      	}
-//     	else if ("paperin".equals(p.getName() )) {
-// 			paper=paper+p.getTotal();
+//public void addPayments(int espacio) {
+//	double efectivo=0.0;
+//	double deb=0.0;
+//	double tc=0.0;
+//	double paper=0.0;
+//	double dif=0.0;
+//	double total_pago=0.0;
+//	double total_invoice=0.0;
+//	for (int j = 0; j < ticket.payments.size(); j++) {
+//	//foreach (PaymentInfo p : ticket.payments)
+//		PaymentInfo p = ticket.payments.get(j) ;
+//	   	if ("cash".equals(p.getName() )) {
+//          	efectivo=efectivo+p.getPaid();
+//     	}   	     	
+//   	  	else if ("magcard".equals(p.getName() )) {
+//        	tc=tc+p.getTotal();
 //     	}
-// 	}
+//    	else if ("paperin".equals(p.getName() )) {
+//			paper=paper+p.getTotal();
+//    	}
+//	}
+//
+//	if (ticket.getTotal() <= efectivo || ticket.getTotal() <= tc || ticket.getTotal() <= paper) {                       
+//        if (ticket.getTotal() <= efectivo) {
+//            salida.write("101\n");
+//        }
+//		else if (ticket.getTotal() <= tc) {
+//            salida.write("109\n");
+//        }
+//		else if (ticket.getTotal() <= paper) {
+//		    salida.write("113\n");
+//        }                        
+//    }	
+//	else {             
+//	    if (efectivo > 0) {
+//		    efect = df1.format(efectivo).toString();
+//            efect = efect.replace(".","");
+//		    efect = strpad(efect, "0", espacio, "STR_PAD_LEFT");
+//            salida.write("201" + efect.replace(",","") + "\n");
+//        }
+//        if (tc > 0) {
+//            tarjeta = df1.format(tc).toString();
+//            tarjeta = tarjeta.replace(".","");
+//		    tarjeta = strpad(tarjeta, "0", espacio, "STR_PAD_LEFT");
+//            salida.write("209" + tarjeta.replace(",","") + "\n");
+//        }
+//        if (paper > 0) {
+//            cestaticket = df1.format(paper).toString();
+//	        cestaticket = cestaticket.replace(".","");
+//		    cestaticket = strpad(cestaticket, "0", espacio, "STR_PAD_LEFT");
+//            salida.write("213" + cestaticket.replace(",","") + "\n");
+//        }
+//		total_pago = efectivo + tc + paper;
+//		total_ticket = ticket.getTotal();
+//		if (total_pago < total_ticket) {
+//            dif = total_ticket - total_pago;
+//		    diferencia = df1.format(dif).toString();
+//            diferencia = diferencia.replace(".","");
+//		    diferencia = strpad(diferencia, "0", espacio, "STR_PAD_LEFT");
+//            salida.write("201" + diferencia.replace(",","") + "\n");
+//        }                        
+//    }
+//}
 
-// 	if (ticket.getTotal() <= efectivo || ticket.getTotal() <= tc || ticket.getTotal() <= paper) {                       
-//         if (ticket.getTotal() <= efectivo) {
-//             salida.write("101\n");
-//         }
-// 		else if (ticket.getTotal() <= tc) {
-//             salida.write("109\n");
-//         }
-// 		else if (ticket.getTotal() <= paper) {
-// 		    salida.write("113\n");
-//         }                        
-//     }	
-// 	else {             
-// 	    if (efectivo > 0) {
-// 		    efect = df1.format(efectivo).toString();
-//             efect = efect.replace(".","");
-// 		    efect = strpad(efect, "0", espacio, "STR_PAD_LEFT");
-//             salida.write("201" + efect.replace(",","") + "\n");
-//         }
-//         if (tc > 0) {
-//             tarjeta = df1.format(tc).toString();
-//             tarjeta = tarjeta.replace(".","");
-// 		    tarjeta = strpad(tarjeta, "0", espacio, "STR_PAD_LEFT");
-//             salida.write("209" + tarjeta.replace(",","") + "\n");
-//         }
-//         if (paper > 0) {
-//             cestaticket = df1.format(paper).toString();
-// 	        cestaticket = cestaticket.replace(".","");
-// 		    cestaticket = strpad(cestaticket, "0", espacio, "STR_PAD_LEFT");
-//             salida.write("213" + cestaticket.replace(",","") + "\n");
-//         }
-// 		total_pago = efectivo + tc + paper;
-// 		total_ticket = ticket.getTotal();
-// 		if (total_pago < total_ticket) {
-//             dif = total_ticket - total_pago;
-// 		    diferencia = df1.format(dif).toString();
-//             diferencia = diferencia.replace(".","");
-// 		    diferencia = strpad(diferencia, "0", espacio, "STR_PAD_LEFT");
-//             salida.write("201" + diferencia.replace(",","") + "\n");
-//         }                        
-//     }
-// }
-
-// Execute Spooler
-// public void executeSpooler(String spoolerBixolon) {
-// try {
-// 	//String spoolerBixolon = ruta+"cmd.bat";
-// 	Runtime.getRuntime().exec(spoolerBixolon,null,new File(ruta)).waitFor();
-//    } catch (IOException eF)  {
-//    	 // Excepciones si hay algún problema al arrancar el ejecutable o al leer su salida.
-//     	eF.printStackTrace();
-//         JOptionPane.showMessageDialog(null, "Error al ejecutar comando: \n" + spoolerBixolon + "\n" + eF, "ERROR", JOptionPane.ERROR_MESSAGE);
-//   } catch (InterruptedException ex) {
-//         JOptionPane.showMessageDialog(null, "Error al ejecutar comando: \n" + spoolerBixolon + "\n" + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
-//   }
-// }
+//Execute Spooler
+public void executeSpooler(String spoolerBixolon) {
+try {
+	//String spoolerBixolon = ruta+"cmd.bat";
+	Runtime.getRuntime().exec(spoolerBixolon,null,new File(ruta)).waitFor();
+   } catch (IOException eF)  {
+   	 // Excepciones si hay algún problema al arrancar el ejecutable o al leer su salida.
+    	eF.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error al ejecutar comando: \n" + spoolerBixolon + "\n" + eF, "ERROR", JOptionPane.ERROR_MESSAGE);
+  } catch (InterruptedException ex) {
+        JOptionPane.showMessageDialog(null, "Error al ejecutar comando: \n" + spoolerBixolon + "\n" + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
+  }
+}
 
 String ruta = "C:/IntTFHKA/";
 File spooler = new File(ruta+"iDempiereSpooler.txt");
@@ -192,12 +192,15 @@ System.out.println("IVA");
 salida.write("3\n");
 
 // Se agregan al Spooler los pagos de la factura
-//addPayments(13);
+if (Invoice.isPaid()) {
+	System.out.println("Factura Tiene Pagos");
+	//addPayments(13);
+}
 
 salida.close();
 
 String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
-//executeSpooler(spoolerBixolon);
+executeSpooler(spoolerBixolon);
 
 boolean isCash = false;
 String change = "";
@@ -295,9 +298,3 @@ if(!"".equals(line) && line != null) {
 System.out.println(result + " - FINISH RULE!");
 
 return result;
-
-//Thread.sleep(40000);
-//File spooler = new File(ruta+"selectrapos.txt");
-//Writer	salida = new BufferedWriter(new FileWriter(spooler));
-//salida.write(0);
-//salida.close();
