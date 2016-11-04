@@ -15,8 +15,11 @@ import org.compiere.model.MClient;
 import org.compiere.model.MConversionRate;
 import org.compiere.model.MConversionRateUtil;
 import org.compiere.model.MDocType;
+import org.compiere.model.MInOut;
 import org.compiere.model.MInOutLine;
 import org.compiere.model.MInvoice;
+import org.compiere.model.MInvoiceBatch;
+import org.compiere.model.MInvoiceBatchLine;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MMatchInv;
 import org.compiere.model.MMatchPO;
@@ -54,6 +57,14 @@ public class MInvoiceFP extends MInvoice {
 	
 	public MInvoiceFP (MOrder order, int C_DocTypeTarget_ID, Timestamp invoiceDate) {
 		super(order, C_DocTypeTarget_ID, invoiceDate);
+	}
+	
+	public MInvoiceFP (MInOut ship, Timestamp invoiceDate) {
+		super(ship, invoiceDate);
+	}
+	
+	public MInvoiceFP (MInvoiceBatch batch, MInvoiceBatchLine line) {
+		super(batch, line);
 	}
 
 	/**
