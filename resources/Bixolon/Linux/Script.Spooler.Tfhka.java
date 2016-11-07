@@ -132,7 +132,11 @@ try {
     JOptionPane.showMessageDialog(null, "Error al leer archivo: " + spooler + "\n" + ex, "ERROR", JOptionPane.ERROR_MESSAGE);
 }
 
-salida.write("i01NOMBRE/RAZON SOCIAL: " + BPartner.getName().toUpperCase() + "\n");
+String bPartnerName = BPartner.getName().toUpperCase();
+if(bPartnerName.length() > 25) {
+	bPartnerName = bPartnerName.substring(0,25) + "\ni02" + bPartnerName.substring(25);
+}
+salida.write("i01NOMBRE/RAZON SOCIAL: " + bPartnerName + "\n");
 salida.write("i02CI/RIF: " + BPartner.getTaxID().toUpperCase() + "\n");
 System.out.println("BUSSINESS PARTNERT " + BPartner.getName().toUpperCase());
 controlNumber=Invoice.get_Value("LVE_controlNumber");
@@ -143,8 +147,6 @@ NumberFormat df1 = new DecimalFormat("#0.00");
 NumberFormat df2 = new DecimalFormat("#0.000"); 
 
 System.out.println("IVA");
-
-System.out.println("IVA2");
 
 //for (int i= 0; i < 2; i++) {
 for (MInvoiceLine invoiceLine : Lines) {
@@ -186,11 +188,11 @@ System.out.println("IVA");
 	MProduct product = new MProduct(getCtx, invoiceLine.getM_Product_ID(), get_TrxName);
 	producto = product.getName().toUpperCase();
 	} else 
-		producto = invoiceLine.getDescription();
-	if (producto.length() > 40) {
-		producto = producto.substring(0,40);
-	}
-	
+		producto = invoiceLine.getDescription().toUpperCase();
+	if (producto.length() > 27) {
+		//producto = producto.substring(0,25) + "\n" + producto.substring(25);
+		producto = producto.substring(0,27);
+	}	
 	salida.write(producto_iva + producto_precio.replace(",","") + producto_cantidad.replace(",","") + producto + "\n" );
 }
 

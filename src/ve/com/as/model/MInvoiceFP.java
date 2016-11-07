@@ -499,16 +499,15 @@ public class MInvoiceFP extends MInvoice {
 				int printer_ID = (int) c_doctype.get_Value("LVE_FiscalPrinter_ID");
 				if (printer_ID != 0) {
 					MLVEFiscalPrinter printer = new MLVEFiscalPrinter(getCtx(), printer_ID, get_TrxName());
-					MLVEFiscalPResources printerResource = null; 
-					printerResource = (MLVEFiscalPResources) new Query(getCtx(), "LVE_FiscalPResources", " LVE_FiscalPrinter_ID = ? AND Value = ? ", null)
-					.setParameters(new Object[] { printer_ID, "PrintIInvoice" }).first();
+					printer.getLVE_SerialFiscal();
+					MLVEFiscalPResources printerResource = new MLVEFiscalPResources(getCtx(), (int) c_doctype.get_Value("LVE_FiscalPResources_ID"), get_TrxName()); 
 					MRule rule = new MRule(getCtx(), printerResource.getAD_Rule_ID(), get_TrxName());
 					if(rule.get_ID() != 0) {
 						MBPartner bPartner = new MBPartner(getCtx(), getC_BPartner_ID(), get_TrxName());
 						MUser salesRep = new MUser(getCtx(), this.getSalesRep_ID(), get_TrxName());
 						String nameSalesRep = salesRep.getName();
 						MInvoiceLine[] invoiceLines = getLines();
-						m_scriptCtx.put("Invoice", this);
+						m_scriptCtx.put("Invoice", this.getDocTypeID());
 						m_scriptCtx.put("Lines", invoiceLines);
 						m_scriptCtx.put("getCtx", getCtx());
 						m_scriptCtx.put("get_TrxName", get_TrxName());

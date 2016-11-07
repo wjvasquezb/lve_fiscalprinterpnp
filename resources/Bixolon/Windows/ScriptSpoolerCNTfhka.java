@@ -2,14 +2,18 @@ import java.io.*;
 import java.text.*;
 import java.lang.String;
 import java.lang.Object;
+
 import com.openbravo.format.Formats;
 import com.openbravo.pos.ticket.*;
 import com.openbravo.pos.customers.*;
 import com.openbravo.pos.sales.*;
 import com.openbravo.pos.payment.PaymentInfo;
+
 import java.util.Properties;
 import java.math.BigDecimal;
+
 import org.compiere.model.MTax;
+import org.compiere.model.MUser;
 import org.compiere.model.Tax;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MProduct;
@@ -40,7 +44,7 @@ public String strpad(String dato, String cformat, int espacio, String pad_type) 
         return dato;
 }
 
-// Se agregan al Spooler los pagos de la factura
+// Se agregan al Spooler los pagos de la NC
 public void addPayments(int espacio) {
 	double efectivo=0.0;
 	double deb=0.0;
@@ -111,9 +115,9 @@ public void addPayments(int espacio) {
 public void executeSpooler(String spoolerBixolon) {
 try {
 	//String spoolerBixolon = ruta+"cmd.bat";
-	System.out´.println("Imprimiendo Nota de Crédito Fiscal");
+	System.out.println("Imprimiendo Nota de Crédito Fiscal");
 	Runtime.getRuntime().exec(spoolerBixolon,null,new File(ruta)).waitFor();
-	System.out´.println("Se termina de imprimir la NC Fiscal");
+	System.out.println("Se termina de imprimir la Nota de Credito Fiscal");
    } catch (IOException eF)  {
    	 // Excepciones si hay algún problema al arrancar el ejecutable o al leer su salida.
     	eF.printStackTrace();
@@ -124,7 +128,7 @@ try {
 }
 
 String ruta = "C:/IntTFHKA/";
-File spooler = new File(ruta+"iDempiereSpooler.txt");
+File spooler = new File(ruta+"iDempiereSpoolerNC.txt");
 Writer	salida = null;
 try {
     salida = new BufferedWriter(new FileWriter(spooler));
@@ -133,19 +137,29 @@ try {
 }
 
 String bPartnerName = BPartner.getName().toUpperCase();
-if(bPartnerName.length() > 42) {
-	bPartnerName = bPartnerName.substring(0,42) + "\ni02" + bPartnerName.substring(42);
+if(bPartnerName.length() > 25) {
+	bPartnerName = bPartnerName.substring(0,25) + "\ni02" + bPartnerName.substring(25);
 }
+MInvoice invoiceAffected = new MInvoice(getCtx, Invoice.get_Value("LVE_invoiceAffected_ID"), get_TrxName);
+String invoiceAffectedNo = invoiceAffected.get_Value("LVE_FiscalDocNo");
+System.out.println("Factura Fiscal Afectada: " + invoiceAffectedNo);
+MDocType doctype = new MDocType(getCtx, invoiceAffected.getDocTypeID(), get_TrxName);
+MLVEFiscalPrinter fiscalPrinter = new (getCtx, doctype.get_Value("LVE_FiscalPrinter_ID"), get_TrxName);
+String serialPrinter = fiscalPrinter.getLVE_SerialFiscal();
+System.out.println("Serial Impresora Fiscal: " + serialPrinter);
+MUser salesRep = new MUser(getCtx, invoiceAffected.getSalesRep_ID(), get_TrxName);
+String nameSalesRep = salesRep.getName();
+System.out.println("Representante Comercial: " + nameSalesRep);
 salida.write("i01NOMBRE/RAZON SOCIAL: " + bPartnerName + "\n");
 salida.write("i03CI/RIF: " + BPartner.getTaxID().toUpperCase() + "\n");
 System.out.println("TERCERO: " + bPartnerName);
 salida.write("i04FACTURA: " + invoiceAffectedNo + " IMPRESORA: " + serialPrinter + "\n");
-salida.write("i05Vendedor: " + SalesRep.toUpperCase() + "\n");
+salida.write("i05Vendedor: " + nameSalesRep.toUpperCase() + "\n");
 NumberFormat df1 = new DecimalFormat("#0.00"); 
 NumberFormat df2 = new DecimalFormat("#0.000"); 
 
 //for (int i= 0; i < 2; i++) {
-for (MInvoiceLine invoiceLine : Lines) {
+for (MInvoiceLine invoiceLine : invoiceAffected.getLines()) {
 	producto_iva="";
 	producto_precio="";
 	producto="";
@@ -201,7 +215,7 @@ for (MInvoiceLine invoiceLine : Lines) {
 //}
 
 salida.close();
-
+//Windows SO
 String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
 executeSpooler(spoolerBixolon);
 
