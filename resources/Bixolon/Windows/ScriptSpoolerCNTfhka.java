@@ -17,6 +17,11 @@ import org.compiere.model.MUser;
 import org.compiere.model.Tax;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MProduct;
+import org.compiere.model.MInvoice;
+import org.compiere.model.MDocType;
+import ve.com.as.model.MLVEFiscalPrinter;
+import ve.com.as.model.X_LVE_FiscalPrinter;
+
 
 public String strpad(String dato, String cformat, int espacio, String pad_type) {
 	tam = dato.length();
@@ -144,7 +149,6 @@ MInvoice invoiceAffected = new MInvoice(getCtx, Invoice.get_Value("LVE_invoiceAf
 String invoiceAffectedNo = invoiceAffected.get_Value("LVE_FiscalDocNo");
 System.out.println("Factura Fiscal Afectada: " + invoiceAffectedNo);
 MDocType doctype = new MDocType(getCtx, invoiceAffected.getDocTypeID(), get_TrxName);
-MLVEFiscalPrinter fiscalPrinter = new (getCtx, doctype.get_Value("LVE_FiscalPrinter_ID"), get_TrxName);
 String serialPrinter = fiscalPrinter.getLVE_SerialFiscal();
 System.out.println("Serial Impresora Fiscal: " + serialPrinter);
 MUser salesRep = new MUser(getCtx, invoiceAffected.getSalesRep_ID(), get_TrxName);
@@ -216,7 +220,7 @@ for (MInvoiceLine invoiceLine : invoiceAffected.getLines()) {
 
 salida.close();
 //Windows SO
-String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
+String spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpoolerNC.txt)";
 executeSpooler(spoolerBixolon);
 
 boolean isCash = false;
@@ -280,7 +284,7 @@ if(!"".equals(line) && line != null) {
 			addPayments(12);
 		if ("0".equals(String.valueOf(ticket.getTicketType())))
 			addPayments(13);
-		spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpooler.txt)";
+		spoolerBixolon = ruta+"IntTFHKA.exe SendFileCmd(C:/IntTFHKA/iDempiereSpoolerNC.txt)";
 		executeSpooler(spoolerBixolon);
 		if(file.exists()) {
 			in = new BufferedReader(fileR);
