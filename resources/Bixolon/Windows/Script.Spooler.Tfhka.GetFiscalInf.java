@@ -3,8 +3,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import javax.swing.JOptionPane;
+
 import com.openbravo.pos.ticket.TicketInfo;
+
+import org.compiere.model.MInvoice;
+import org.compiere.model.X_C_DocType;
+import org.compiere.model.PO;
+import org.compiere.model.MDocType;
 
 /**
  * 2016-07
@@ -12,9 +19,9 @@ import com.openbravo.pos.ticket.TicketInfo;
  * Script Java que permite obtener Datos Impresora Fiscal Bixolon.
  */
 
-String fiscalNumber = "", fiscalSerial = "", creditNote = "";
-Object result = "";
-String path = "C:\\IntTFHKA\\";
+String fiscalSerial = "";
+Object result = "", fiscalNumber = "", creditNote = "";
+String path = "C:/IntTFHKA/";
 String spoolerBixolon = "";
 String line = "";
 FileReader file = null;
@@ -25,7 +32,7 @@ try {
     System.out.println("--------------------    OBTENIENDO DATOS DE LA IMPRESORA FISCAL BIXOLON    --------------------");
     spoolerBixolon = path+"IntTFHKA.exe UploadStatusCmd(S1)";
     System.out.println("Se empieza a ejecutar el comando 'IntTFHKA.exe UploadStatusCmd(S1)'");
-    //new ProcessBuilder(spoolerBixolon).start().waitFor();
+//    new ProcessBuilder(spoolerBixolon).start().waitFor();
     Runtime.getRuntime().exec(spoolerBixolon, null, new File(path)).waitFor();
     System.out.println("Se termina de ejecutar el comando 'IntTFHKA.exe UploadStatusCmd(S1)'");
     file = new FileReader(path+"Status.txt");
@@ -56,15 +63,20 @@ try {
         creditNote = line.substring(88, 96);
         System.out.println("Número de Nota de Crédito: " + creditNote);
   //      ticket.setFiscalNumber(fiscalNumber + "_NC" + creditNote);
-		
+        System.out.println("Invoice: " + Invoice.getDocumentNo());
         MDocType doctype = new MDocType(getCtx, Invoice.getC_DocType_ID(), get_TrxName);
-        if (doctype.getDocBaseType() == MDocType.DOCBASETYPE_ARInvoice)
-        	Invoice.set_Value("LVE_FiscalDocNo", fiscalNumber);
-        else if(doctype.getDocBaseType() == MDocType.DOCBASETYPE_ARCreditMemo)
-        	Invoice.set_Value("LVE_FiscalDocNo", creditNote);
-        Invoice.saveEx();
+        System.out.println("Tipo de Documento Base: " + doctype.getDocBaseType());
+        System.out.println("MDocType.DOCBASETYPE_ARInvoice: " + MDocType.DOCBASETYPE_ARInvoice);
+        if (MDocType.DOCBASETYPE_ARInvoice.equals(doctype.getDocBaseType())) {
+            System.out.println("Seteando Numero de Factura Fiscal " + fiscalNumber);
+            result = fiscalNumber;
+        }
+        else if(MDocType.DOCBASETYPE_ARCreditMemo.equals(doctype.getDocBaseType())) {
+            System.out.println("Seteando Numero de Nota de Credito Fiscal " + creditNote);
+            result = creditNote;
+        }
 //    }
-    result = fiscalSerial + "_" + fiscalNumber + ("".equals(creditNote) ? "" : "_NC" + creditNote);
+//    result = fiscalSerial + "_" + fiscalNumber + ("".equals(creditNote) ? "" : "_NC" + creditNote);
     System.out.println("INFORMACIÓN FISCAL: " + result);
 } catch (FileNotFoundException ex) {
     JOptionPane.showMessageDialog(null, "Error al verificar Datos de la Impresora Fiscal\n" + ex);
