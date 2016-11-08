@@ -138,8 +138,8 @@ if(bPartnerName.length() > 25) {
 }
 salida.write("i01NOMBRE/RAZON SOCIAL: " + bPartnerName + "\n");
 salida.write("i02CI/RIF: " + BPartner.getTaxID().toUpperCase() + "\n");
-System.out.println("BUSSINESS PARTNERT " + BPartner.getName().toUpperCase());
-controlNumber=Invoice.get_Value("LVE_controlNumber");
+System.out.println("BUSSINESS PARTNER " + BPartner.getName().toUpperCase());
+String controlNumber= Invoice.get_ValueAsString("LVE_controlNumber");
 salida.write("i03" + controlNumber + "\n");
 salida.write("@Vendedor: " + SalesRep.toUpperCase() + "\n");
 System.out.println("INVOICE:  " + Invoice.get_Value("LVE_controlNumber"));

@@ -42,6 +42,8 @@ import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Msg;
 
+import ve.com.as.model.MLVEFiscalPrinter;
+
 public class MInvoiceFP extends MInvoice {
 	
 	HashMap<String, Object> m_scriptCtx = new HashMap<String, Object>();
@@ -499,7 +501,6 @@ public class MInvoiceFP extends MInvoice {
 				int printer_ID = (int) c_doctype.get_Value("LVE_FiscalPrinter_ID");
 				if (printer_ID != 0) {
 					MLVEFiscalPrinter printer = new MLVEFiscalPrinter(getCtx(), printer_ID, get_TrxName());
-					printer.getLVE_SerialFiscal();
 					MLVEFiscalPResources printerResource = new MLVEFiscalPResources(getCtx(), (int) c_doctype.get_Value("LVE_FiscalPResources_ID"), get_TrxName()); 
 					MRule rule = new MRule(getCtx(), printerResource.getAD_Rule_ID(), get_TrxName());
 					if(rule.get_ID() != 0) {
@@ -507,12 +508,13 @@ public class MInvoiceFP extends MInvoice {
 						MUser salesRep = new MUser(getCtx(), this.getSalesRep_ID(), get_TrxName());
 						String nameSalesRep = salesRep.getName();
 						MInvoiceLine[] invoiceLines = getLines();
-						m_scriptCtx.put("Invoice", this.getDocTypeID());
+						m_scriptCtx.put("Invoice", this);
 						m_scriptCtx.put("Lines", invoiceLines);
 						m_scriptCtx.put("getCtx", getCtx());
 						m_scriptCtx.put("get_TrxName", get_TrxName());
 						m_scriptCtx.put("BPartner", bPartner);
 						m_scriptCtx.put("SalesRep", nameSalesRep);
+						m_scriptCtx.put("fiscalPrinter", printer);
 						result = executeScript(rule.get_ID());
 					} else
 						result = "No ha seleccionado regla para Impresora " + printer.getName();
@@ -522,8 +524,16 @@ public class MInvoiceFP extends MInvoice {
 						info.append(" Respuesta Impresora Fiscal: " + result);
 						m_processMsg = info.toString().trim();
 						return DocAction.STATUS_Invalid;
-					} else 
-						info.append(" - Respuesta Impresora Fiscal: " + result);
+					} else {
+						info.append(" - Documento impreso Correctamente");
+						MLVEFiscalPResources getFiscalInfo = null; 
+						getFiscalInfo = (MLVEFiscalPResources) new Query(getCtx(), "LVE_FiscalPResources", " LVE_FiscalPrinter_ID = ? AND Value = ? ", null)
+						.setParameters(new Object[] { printer_ID, "GetFiscalInf" }).first();
+						MRule fiscalInfo = new MRule(getCtx(), getFiscalInfo.getAD_Rule_ID(), get_TrxName());
+						String sFiscalInfo = (String) executeScript(fiscalInfo.getAD_Rule_ID());
+						set_Value("LVE_FiscalDocNo", sFiscalInfo);
+						saveEx();
+					}
 				}
 			}
 		}
