@@ -111,7 +111,7 @@ public void addPayments(int espacio) {
 public void executeSpooler(String spoolerBixolon) {
 try {
 	//String spoolerBixolon = ruta+"cmd.bat";
-	System.out.println("Impriemiento Factura Fiscal");
+	System.out.println("Imprimiendo Factura Fiscal");
 	Runtime.getRuntime().exec(spoolerBixolon,null,new File(ruta)).waitFor();
 	System.out.println("Se termina de imprimir la Factura Fiscal");
    } catch (IOException eF)  {
