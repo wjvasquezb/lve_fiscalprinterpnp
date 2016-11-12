@@ -133,8 +133,8 @@ try {
 }
 
 String bPartnerName = BPartner.getName().toUpperCase();
-if(bPartnerName.length() > 25) {
-	bPartnerName = bPartnerName.substring(0,25) + "\ni02" + bPartnerName.substring(25);
+if(bPartnerName.length() > 23) {
+	bPartnerName = bPartnerName.substring(0,23) + "\ni02" + bPartnerName.substring(23);
 }
 salida.write("i01NOMBRE/RAZON SOCIAL: " + bPartnerName + "\n");
 salida.write("i03CI/RIF: " + BPartner.getTaxID().toUpperCase() + "\n");

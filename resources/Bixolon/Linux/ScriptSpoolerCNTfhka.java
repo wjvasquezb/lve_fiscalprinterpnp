@@ -142,8 +142,8 @@ try {
 }
 
 String bPartnerName = BPartner.getName().toUpperCase();
-if(bPartnerName.length() > 25) {
-	bPartnerName = bPartnerName.substring(0,25) + "\ni02" + bPartnerName.substring(25);
+if(bPartnerName.length() > 23) {
+	bPartnerName = bPartnerName.substring(0,23) + "\ni02" + bPartnerName.substring(23);
 }
 MInvoice invoiceAffected = new MInvoice(getCtx, Invoice.get_Value("LVE_invoiceAffected_ID"), get_TrxName);
 String invoiceAffectedNo = invoiceAffected.get_Value("LVE_FiscalDocNo");
