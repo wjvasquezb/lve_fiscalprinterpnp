@@ -32,7 +32,7 @@ public interface I_LVE_FiscalPrinter
     /** TableName=LVE_FiscalPrinter */
     public static final String Table_Name = "LVE_FiscalPrinter";
 
-    /** AD_Table_ID=1000027 */
+    /** AD_Table_ID=1000078 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -75,6 +75,15 @@ public interface I_LVE_FiscalPrinter
 
 	public org.compiere.model.I_AD_Rule getAD_Rule() throws RuntimeException;
 
+    /** Column name Brand */
+    public static final String COLUMNNAME_Brand = "Brand";
+
+	/** Set Brand	  */
+	public void setBrand (String Brand);
+
+	/** Get Brand	  */
+	public String getBrand();
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 
@@ -90,6 +99,15 @@ public interface I_LVE_FiscalPrinter
 	  * User who created this records
 	  */
 	public int getCreatedBy();
+
+    /** Column name DatePrinter */
+    public static final String COLUMNNAME_DatePrinter = "DatePrinter";
+
+	/** Set DatePrinter	  */
+	public void setDatePrinter (Timestamp DatePrinter);
+
+	/** Get DatePrinter	  */
+	public Timestamp getDatePrinter();
 
     /** Column name Description */
     public static final String COLUMNNAME_Description = "Description";
@@ -126,6 +144,42 @@ public interface I_LVE_FiscalPrinter
 	  */
 	public boolean isActive();
 
+    /** Column name IsConnected */
+    public static final String COLUMNNAME_IsConnected = "IsConnected";
+
+	/** Set Is Connected	  */
+	public void setIsConnected (boolean IsConnected);
+
+	/** Get Is Connected	  */
+	public boolean isConnected();
+
+    /** Column name LastCNFiscalNo */
+    public static final String COLUMNNAME_LastCNFiscalNo = "LastCNFiscalNo";
+
+	/** Set Last Credit Note Fiscal No	  */
+	public void setLastCNFiscalNo (String LastCNFiscalNo);
+
+	/** Get Last Credit Note Fiscal No	  */
+	public String getLastCNFiscalNo();
+
+    /** Column name LastInvFiscalDate */
+    public static final String COLUMNNAME_LastInvFiscalDate = "LastInvFiscalDate";
+
+	/** Set Last Invoice Fiscal Date	  */
+	public void setLastInvFiscalDate (Timestamp LastInvFiscalDate);
+
+	/** Get Last Invoice Fiscal Date	  */
+	public Timestamp getLastInvFiscalDate();
+
+    /** Column name LastInvFiscalNo */
+    public static final String COLUMNNAME_LastInvFiscalNo = "LastInvFiscalNo";
+
+	/** Set Last Invoice Fiscal No	  */
+	public void setLastInvFiscalNo (String LastInvFiscalNo);
+
+	/** Get Last Invoice Fiscal No	  */
+	public String getLastInvFiscalNo();
+
     /** Column name LVE_CheckStatusFP */
     public static final String COLUMNNAME_LVE_CheckStatusFP = "LVE_CheckStatusFP";
 
@@ -134,6 +188,24 @@ public interface I_LVE_FiscalPrinter
 
 	/** Get Check Status Fiscal Printer	  */
 	public String getLVE_CheckStatusFP();
+
+    /** Column name LVE_CloseX_Process */
+    public static final String COLUMNNAME_LVE_CloseX_Process = "LVE_CloseX_Process";
+
+	/** Set Close X Process	  */
+	public void setLVE_CloseX_Process (String LVE_CloseX_Process);
+
+	/** Get Close X Process	  */
+	public String getLVE_CloseX_Process();
+
+    /** Column name LVE_CloseZ_Process */
+    public static final String COLUMNNAME_LVE_CloseZ_Process = "LVE_CloseZ_Process";
+
+	/** Set Close Z Process	  */
+	public void setLVE_CloseZ_Process (String LVE_CloseZ_Process);
+
+	/** Get Close Z Process	  */
+	public String getLVE_CloseZ_Process();
 
     /** Column name LVE_FiscalPrinter_ID */
     public static final String COLUMNNAME_LVE_FiscalPrinter_ID = "LVE_FiscalPrinter_ID";
@@ -153,6 +225,33 @@ public interface I_LVE_FiscalPrinter
 	/** Get LVE_FiscalPrinter_UU	  */
 	public String getLVE_FiscalPrinter_UU();
 
+    /** Column name LVE_FPError */
+    public static final String COLUMNNAME_LVE_FPError = "LVE_FPError";
+
+	/** Set Fiscal Printer Error	  */
+	public void setLVE_FPError (String LVE_FPError);
+
+	/** Get Fiscal Printer Error	  */
+	public String getLVE_FPError();
+
+    /** Column name LVE_FPStatus */
+    public static final String COLUMNNAME_LVE_FPStatus = "LVE_FPStatus";
+
+	/** Set Fiscal Printer Status	  */
+	public void setLVE_FPStatus (String LVE_FPStatus);
+
+	/** Get Fiscal Printer Status	  */
+	public String getLVE_FPStatus();
+
+    /** Column name LVE_FStatus */
+    public static final String COLUMNNAME_LVE_FStatus = "LVE_FStatus";
+
+	/** Set Fiscal Status	  */
+	public void setLVE_FStatus (String LVE_FStatus);
+
+	/** Get Fiscal Status	  */
+	public String getLVE_FStatus();
+
     /** Column name LVE_GetFiscalInfo */
     public static final String COLUMNNAME_LVE_GetFiscalInfo = "LVE_GetFiscalInfo";
 
@@ -166,6 +265,33 @@ public interface I_LVE_FiscalPrinter
 	  */
 	public String getLVE_GetFiscalInfo();
 
+    /** Column name LVE_LastZNo */
+    public static final String COLUMNNAME_LVE_LastZNo = "LVE_LastZNo";
+
+	/** Set Last Z No	  */
+	public void setLVE_LastZNo (String LVE_LastZNo);
+
+	/** Get Last Z No	  */
+	public String getLVE_LastZNo();
+
+    /** Column name LVE_PrinterRegNo */
+    public static final String COLUMNNAME_LVE_PrinterRegNo = "LVE_PrinterRegNo";
+
+	/** Set Printer Registration Number	  */
+	public void setLVE_PrinterRegNo (String LVE_PrinterRegNo);
+
+	/** Get Printer Registration Number	  */
+	public String getLVE_PrinterRegNo();
+
+    /** Column name LVE_QtyZ */
+    public static final String COLUMNNAME_LVE_QtyZ = "LVE_QtyZ";
+
+	/** Set Qty Z	  */
+	public void setLVE_QtyZ (BigDecimal LVE_QtyZ);
+
+	/** Get Qty Z	  */
+	public BigDecimal getLVE_QtyZ();
+
     /** Column name LVE_SerialFiscal */
     public static final String COLUMNNAME_LVE_SerialFiscal = "LVE_SerialFiscal";
 
@@ -174,6 +300,15 @@ public interface I_LVE_FiscalPrinter
 
 	/** Get Serial Fiscal	  */
 	public String getLVE_SerialFiscal();
+
+    /** Column name Model */
+    public static final String COLUMNNAME_Model = "Model";
+
+	/** Set Model	  */
+	public void setModel (String Model);
+
+	/** Get Model	  */
+	public String getModel();
 
     /** Column name Name */
     public static final String COLUMNNAME_Name = "Name";
@@ -187,6 +322,15 @@ public interface I_LVE_FiscalPrinter
 	  * Alphanumeric identifier of the entity
 	  */
 	public String getName();
+
+    /** Column name QtyInvoiceDay */
+    public static final String COLUMNNAME_QtyInvoiceDay = "QtyInvoiceDay";
+
+	/** Set Qty of Invoice by Day	  */
+	public void setQtyInvoiceDay (BigDecimal QtyInvoiceDay);
+
+	/** Get Qty of Invoice by Day	  */
+	public BigDecimal getQtyInvoiceDay();
 
     /** Column name Updated */
     public static final String COLUMNNAME_Updated = "Updated";

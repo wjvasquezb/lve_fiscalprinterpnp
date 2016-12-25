@@ -32,7 +32,7 @@ public interface I_LVE_FiscalPResources
     /** TableName=LVE_FiscalPResources */
     public static final String Table_Name = "LVE_FiscalPResources";
 
-    /** AD_Table_ID=1000028 */
+    /** AD_Table_ID=1000079 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -103,6 +103,19 @@ public interface I_LVE_FiscalPResources
 	  * Optional short description of the record
 	  */
 	public String getDescription();
+
+    /** Column name IsActive */
+    public static final String COLUMNNAME_IsActive = "IsActive";
+
+	/** Set Active.
+	  * The record is active in the system
+	  */
+	public void setIsActive (boolean IsActive);
+
+	/** Get Active.
+	  * The record is active in the system
+	  */
+	public boolean isActive();
 
     /** Column name LVE_FiscalPResources_ID */
     public static final String COLUMNNAME_LVE_FiscalPResources_ID = "LVE_FiscalPResources_ID";

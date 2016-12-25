@@ -30,7 +30,7 @@ public class X_LVE_FiscalPResources extends PO implements I_LVE_FiscalPResources
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20161102L;
+	private static final long serialVersionUID = 20161225L;
 
     /** Standard Constructor */
     public X_LVE_FiscalPResources (Properties ctx, int LVE_FiscalPResources_ID, String trxName)
