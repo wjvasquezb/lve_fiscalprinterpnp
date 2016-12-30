@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="ve.com.as.model.LVE_FiscalPrinter"
+         name="ve.com.as.model.LVE_FiscalPrinter"
+         point="org.adempiere.base.ModelValidator">
+      <listener
+            class="ve.com.as.model.LVE_FiscalPrinter">
+      </listener>
+   </extension>
+
+</plugin>
