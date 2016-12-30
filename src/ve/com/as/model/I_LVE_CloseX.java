@@ -32,7 +32,7 @@ public interface I_LVE_CloseX
     /** TableName=LVE_CloseX */
     public static final String Table_Name = "LVE_CloseX";
 
-    /** AD_Table_ID=1000081 */
+    /** AD_Table_ID=1000030 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);

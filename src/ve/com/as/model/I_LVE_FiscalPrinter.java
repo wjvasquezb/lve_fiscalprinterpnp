@@ -32,7 +32,7 @@ public interface I_LVE_FiscalPrinter
     /** TableName=LVE_FiscalPrinter */
     public static final String Table_Name = "LVE_FiscalPrinter";
 
-    /** AD_Table_ID=1000078 */
+    /** AD_Table_ID=1000027 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);

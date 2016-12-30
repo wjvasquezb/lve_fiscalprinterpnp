@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FiscalPrinter
-Bundle-SymbolicName: ve.com.as.FiscalPrinter
-Bundle-Version: 1.0.0.qualifier
+Bundle-Name: LVE_FiscalPrinter
+Bundle-SymbolicName: ve.com.as.LVE_FiscalPrinter
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.adempiere.plugin.utils.AdempiereActivator
 Bundle-Vendor: Ing. Victor Suárez - victor.suarez.is@gmail.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

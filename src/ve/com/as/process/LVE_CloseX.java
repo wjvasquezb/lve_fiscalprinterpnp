@@ -5,13 +5,9 @@ import java.util.logging.Level;
 
 import org.adempiere.exceptions.AdempiereException;
 import org.compiere.model.MRule;
-import org.compiere.model.Query;
 import org.compiere.model.Scriptlet;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
-
-import ve.com.as.model.MLVEFiscalPResources;
-import ve.com.as.model.MLVEFiscalPrinter;
 
 public class LVE_CloseX extends SvrProcess {
 	
@@ -40,17 +36,17 @@ public class LVE_CloseX extends SvrProcess {
 
 	@Override
 	protected String doIt() throws Exception {
-		MLVEFiscalPrinter printer = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
-		MLVEFiscalPResources printerResource = null; 
-		printerResource = (MLVEFiscalPResources) new Query(getCtx(), "LVE_FiscalPResources", " LVE_FiscalPrinter_ID = ? AND Value = ? ", null)
-		.setParameters(new Object[] { p_LVE_FiscalPrinter_ID, p_Value }).first();
-		MRule rule = new MRule(getCtx(), printerResource.getAD_Rule_ID(), get_TrxName());
-		if(rule.get_ID() != 0) {
-			result = executeScript(rule.get_ID());
-		} else
-			result = "No ha seleccionado regla para Impresora " + printer.getName();
-		if (result == null)
-			result = "Ejecución de Regla " + rule.getName() + " ha retornado null";
+//		MLVEFiscalPrinter printer = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
+//		MLVEFiscalPResources printerResource = null; 
+//		printerResource = (MLVEFiscalPResources) new Query(getCtx(), "LVE_FiscalPResources", " LVE_FiscalPrinter_ID = ? AND Value = ? ", null)
+//		.setParameters(new Object[] { p_LVE_FiscalPrinter_ID, p_Value }).first();
+//		MRule rule = new MRule(getCtx(), printerResource.getAD_Rule_ID(), get_TrxName());
+//		if(rule.get_ID() != 0) {
+//			result = executeScript(rule.get_ID());
+//		} else
+//			result = "No ha seleccionado regla para Impresora " + printer.getName();
+//		if (result == null)
+//			result = "Ejecución de Regla " + rule.getName() + " ha retornado null";
 		return result.toString();
 	}
 	

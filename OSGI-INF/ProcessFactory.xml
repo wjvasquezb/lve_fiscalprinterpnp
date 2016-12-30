@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ve.com.as.FiscalPrinterProcessFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ve.com.as.LVEFiscalPrinterProcessFactory">
    <implementation class="ve.com.as.component.ProcessFactory"/>
-   <property name="service.ranking" type="Integer" value="1"/>
+   <property name="service.ranking" type="Integer" valu100="1" value="100"/>
    <service>
       <provide interface="org.adempiere.base.IProcessFactory"/>
    </service>>

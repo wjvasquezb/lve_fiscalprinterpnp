@@ -33,7 +33,7 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20161225L;
+	private static final long serialVersionUID = 20161230L;
 
     /** Standard Constructor */
     public X_LVE_CloseX (Properties ctx, int LVE_CloseX_ID, String trxName)

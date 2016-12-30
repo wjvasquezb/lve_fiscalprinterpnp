@@ -34,7 +34,7 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20161225L;
+	private static final long serialVersionUID = 20161230L;
 
     /** Standard Constructor */
     public X_LVE_FiscalPrinter (Properties ctx, int LVE_FiscalPrinter_ID, String trxName)
