@@ -161,7 +161,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			String qty = format(invoiceLine.getQtyEntered());
 			try {
 				salida.write("@FACTITEM|" + product + "|" + qty + "|" + price + "|" + iva + "\n");
-				salida.write("@FACTCIERRA|T");
+				salida.write("@FACTCIERRA|");
 			} catch (IOException e) {
 				msg = "ERROR al escribir línea del producto: " + product + " de la Factura Fiscal";
 				log.warning(msg);
