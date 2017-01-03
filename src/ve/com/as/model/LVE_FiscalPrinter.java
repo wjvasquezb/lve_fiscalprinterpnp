@@ -24,7 +24,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.security.Timestamp;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import org.compiere.model.MBPartner;
 import org.compiere.model.MCharge;
@@ -43,7 +45,10 @@ import org.compiere.model.Query;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 
+import ve.com.as.component.IDLLPnP;
 import ve.com.as.process.LVE_PrintDocument;
+
+import com.sun.jna.Native;
 
 /**
  * 
@@ -61,9 +66,15 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
 	private String[] lines;
 	public String msg = "";
+	
+	public static IDLLPnP dllPnP;
 
 	public LVE_FiscalPrinter() {
-		System.out.println("Imprimir Factura Fiscal:  LVE_FiscalPrinter()");
+		msg = "Imprimir Factura Fiscal: LVE_FiscalPrinter()";
+		log.info(msg);
+		msg = "Se carga la librería";
+		System.load("C:\\adempiere-client\\PnP\\pnpdlltest.dll");
+		dllPnP = (IDLLPnP)Native.loadLibrary("pnpdlltest", IDLLPnP.class);  
 	}
 
 	@Override
@@ -116,102 +127,108 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	private String printInvoice(MBPartner partner, MInvoice invoice) {
 		PO taxIdType = new Query(partner.getCtx(), MTable.get(partner.getCtx(), "LCO_TaxIdType"), "LCO_TaxIdType_ID =? ", partner.get_TrxName()).setParameters(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID"))).first();			
 		String typePerson = taxIdType.get_Value("Name").toString();
-
-		String path = "";
-		if(Env.isWindows()) {
-			path = "C:/jpfbatch/";
-		}
-		File factura = new File(path + "factura.in");
-		Writer	salida = null;
-		try {
-		    salida = new BufferedWriter(new FileWriter(factura));
-		} catch (IOException ex) {
-			msg = "ERROR - No se puede leer archivo " + factura;
-			log.warning(msg);
-			return msg;
-		}
+		MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
 
 		/**	DATOS DE LA FACTURA FISCAL	**/
 		String name = partner.getName().toUpperCase();
 		String taxID = typePerson + partner.getTaxID();
 		String text = "Ficha: " + partner.getValue();
-		try {
-			salida.write("@FACTABRE|" + name + "|" + taxID + "|" + "\n");
-			salida.write("@IMPRTXTF|" + text + "\n");
-		} catch (IOException e1) {
-			msg = "ERROR al escribir Cabecera de la Factura Fiscal";
-			log.warning(msg);
-			return msg;
+		String sql = "LVE_FiscalPrinter_ID = (SELECT d.LVE_FiscalPrinter_ID FROM C_DocType d JOIN C_Invoice i ON i.C_DocType_ID = d.C_DocType_ID "
+				+ "WHERE i.C_Invoice_ID = ?)";
+		int fiscalPrinterID = new Query(invoice.getCtx(), MLVEFiscalPrinter.Table_Name, sql, invoice.get_TrxName()).setParameters(invoice.getC_Invoice_ID()).firstId();
+		MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), fiscalPrinterID, invoice.get_TrxName()); 
+		int port = fiscalPrinter.getLVE_FiscalPort();
+		
+		if(port == 0) 
+			return "ERROR - Debe seleccionar Puerto de Impresora Fiscal";
+		msg = dllPnP.PFabrepuerto(String.valueOf(port));
+		if(!msg.equals("OK"))
+			return "ERROR abriendo Puerto Impresora - " + msg;
+		
+		if(docType.getDocBaseType().equals(docType.DOCBASETYPE_ARInvoice)) {
+			msg = dllPnP.PFabrefiscal(name, taxID);
+			if(!msg.equals("OK"))
+				return "ERROR abriendo Factura Fiscal - " + msg;
+			msg = dllPnP.PFTfiscal(text);
+			if(!msg.equals("OK"))
+				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
+			/**	DATOS DE LA LINEA DE LA FACTURA FISCAL	**/
+			for(MInvoiceLine invoiceLine : invoice.getLines()) {
+				String description = invoiceLine.getDescription();
+				if(invoiceLine.getM_Product_ID() != 0) {
+					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
+					description = product.getName();
+				} 
+				if(invoiceLine.getC_Charge_ID() != 0) {
+					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
+					description = charge.getName();
+				}
+				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
+				String product = description;
+				String price = format(invoiceLine.getPriceEntered());
+				String iva = format(tax.getRate());
+				String qty = format(invoiceLine.getQtyEntered());
+				
+				msg = dllPnP.PFrenglon(description, qty, price, iva);
+				if(!msg.equals("OK"))
+					return "ERROR agregando Lineas - " + msg;
 		}
-		/**	DATOS DE LA LINEA DE LA FACTURA FISCAL	**/
-		for(MInvoiceLine invoiceLine : invoice.getLines()) {
-			String description = invoiceLine.getDescription();
-			if(invoiceLine.getM_Product_ID() != 0) {
-				MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
-				description = product.getName();
-			} 
-			if(invoiceLine.getC_Charge_ID() != 0) {
-				MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
-				description = charge.getName();
-			}
-			MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
-			String product = description;
-			String price = format(invoiceLine.getPriceEntered());
-			String iva = format(tax.getRate());
-			String qty = format(invoiceLine.getQtyEntered());
-			try {
-				salida.write("@FACTITEM|" + product + "|" + qty + "|" + price + "|" + iva + "\n");
-				salida.write("@FACTCIERRA|");
-			} catch (IOException e) {
-				msg = "ERROR al escribir línea del producto: " + product + " de la Factura Fiscal";
-				log.warning(msg);
-				return msg;
-			}
-			try {
-				salida.close();
-			} catch (IOException e) {
-				msg = "ERROR al completar el archivo de salida hacia la Impresora";
-				log.warning(msg);
-				return msg;
-			}
+		} else if (docType.getDocBaseType().equals(docType.DOCBASETYPE_ARCreditMemo)){
+			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), invoice.get_ValueAsInt(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_InvoiceAffected")), invoice.get_TrxName());
+			if(invoiceAffected == null)
+				return "ERROR - debe colocar la factura afectada";
+			
+			String date = formatDate(invoiceAffected.getDateAcct());
+			String hour = formatHour(invoiceAffected.getDateAcct());
+			
+			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffected.get_ValueAsString("LVE_FiscalDocNo"), fiscalPrinter.getLVE_SerialFiscal(), date, hour);
+			if(!msg.equals("OK"))
+				return "ERROR abriendo Factura Fiscal - " + msg;
+			msg = dllPnP.PFTfiscal(text);
+			if(!msg.equals("OK"))
+				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
+			/**	DATOS DE LA LINEA DE LA NOTA DE CRÉDITO	**/
+			for(MInvoiceLine invoiceLine : invoice.getLines()) {
+				String description = invoiceLine.getDescription();
+				if(invoiceLine.getM_Product_ID() != 0) {
+					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
+					description = product.getName();
+				} 
+				if(invoiceLine.getC_Charge_ID() != 0) {
+					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
+					description = charge.getName();
+				}
+				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
+				String product = description;
+				String price = format(invoiceLine.getPriceEntered());
+				String iva = format(tax.getRate());
+				String qty = format(invoiceLine.getQtyEntered());
+				
+				msg = dllPnP.PFrenglon(description, qty, price, iva);
+				if(!msg.equals("OK"))
+					return "ERROR agregando Lineas - " + msg;
+		}
+		msg = dllPnP.PFTotal();
+		if(!msg.equals("OK"))
+			return "ERROR agregando Total al Documento Fiscal - " + msg;
+		
 		}
 		
-		LVE_PrintDocument printDoc = new LVE_PrintDocument();
-		try {
-			/** Se manda a Imprimir Factura	**/
-			bReader = printDoc.sendCommand("factura");
-			
-			String line = "";
-			lines = null;
-			int l = 0;
-			MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
-			MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), docType.get_ValueAsInt("LVE_FiscalPrinter_ID"), invoice.get_TrxName());
-			 while((line = bReader.readLine())!=null) {
-				 lines[l] = line;
-				 if(lines[l].contains("ERROR")) {
-					 invoice.set_ValueOfColumn("LVE_FiscalDocNo", "ERROR");
-					 fiscalPrinter.setLVE_FPError(lines[l]);
-					 fiscalPrinter.saveEx();
-					 msg = "ERROR - " + lines[l];
-					 log.warning(msg);
-					 return msg;
-				 }
-				 String fiscalDocNo = lines[l].substring(lines[l].indexOf(";"));
-				 invoice.set_ValueOfColumn("LVE_FiscalDocNo", fiscalDocNo);
-				 fiscalPrinter.setLastInvFiscalNo(fiscalDocNo);
-				 fiscalPrinter.saveEx();
-//				 l++;
-			 }
-			 bReader.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return "ERROR - No se pudo leer el archivo de salida. \n" + e.getMessage();
-		} catch (IOException e) {
-			return "ERROR - No se pudo leer el archivo de salida. \n" + e.getMessage();
-		}
+		/**	Obtener Información de la Impresora Fiscal	**/
+		String result = dllPnP.PFultimo();
 		return "";
 	}
 	
+	private String formatHour(java.sql.Timestamp timestamp) {
+		String hourStr = new SimpleDateFormat("HHmm").format(timestamp);
+		return hourStr;
+	}
+
+	private String formatDate(java.sql.Timestamp timestamp) {
+		String dateStr = new SimpleDateFormat("ddMMyyy").format(timestamp);
+		return dateStr;
+	}
+
 	public String format(BigDecimal monto) {
 		String value="";		
 		DecimalFormat decf = new DecimalFormat("######.00");

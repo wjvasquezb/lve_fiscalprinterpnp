@@ -1,82 +1,53 @@
 package ve.com.as.process;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.adempiere.exceptions.AdempiereException;
-import org.compiere.model.MRule;
-import org.compiere.model.Scriptlet;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
 
+import ve.com.as.model.LVE_FiscalPrinter;
+import ve.com.as.model.MLVEFiscalPrinter;
+
+
 public class LVE_GetFiscalInfo extends SvrProcess {
 	
-	int p_LVE_FiscalPrinter_ID = 0;
-	int LVE_FiscalPResources_ID = 0;
-	int AD_Rule_ID = 0;
-	String p_Value = "";
-	Object result = "";
-	HashMap<String, Object> m_scriptCtx = new HashMap<String, Object>();
-
+	public int p_LVE_FiscalPrinter_ID = 0;
+	public MLVEFiscalPrinter fiscalPrinter = null;
+	public int port = 0;
+	public String status = "";
+	public String p_TypeStatus = "N";
+	
 	@Override
 	protected void prepare() {
+		System.out.println("Prepare Check Status Printer");
+		
 		ProcessInfoParameter[] para = getParameter();
-	    for (int i = 0; i < para.length; i++)
-	    {
-	      String name = para[i].getParameterName();
-	      if (name.equals("LVE_FiscalPrinter_ID")) {
-	        this.p_LVE_FiscalPrinter_ID = para[i].getParameterAsInt();
-	      } else if (name.equals("Value")) {
-	        this.p_Value = para[i].getParameterAsString();
-	      } else {
-	        this.log.log(Level.SEVERE, "Unknown Parameter: " + name);
-	      }
-	    }
+		for (int i = 0; i < para.length; i++) {
+			String name = para[i].getParameterName();
+			if (name.equals("LVE_FiscalPrinter_ID"))
+				p_LVE_FiscalPrinter_ID = para[i].getParameterAsInt();
+			else if (name.equals("TypeStatus"))
+				p_TypeStatus = para[i].getParameterAsString();
+		}
+		log.log(Level.SEVERE, "Impresora Fiscal : " + p_LVE_FiscalPrinter_ID);		
 	}
 
 	@Override
-	protected String doIt() throws Exception {
-//		MLVEFiscalPrinter printer = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
-//		MLVEFiscalPResources printerResource = null; 
-//		printerResource = (MLVEFiscalPResources) new Query(getCtx(), "LVE_FiscalPResources", " LVE_FiscalPrinter_ID = ? AND Value = ? ", null)
-//		.setParameters(new Object[] { p_LVE_FiscalPrinter_ID, p_Value }).first();
-//		MRule rule = new MRule(getCtx(), printerResource.getAD_Rule_ID(), get_TrxName());
-//		if(rule.get_ID() != 0) {
-//			result = executeScript(rule.get_ID());
-//		} else
-//			result = "No ha seleccionado regla para Impresora " + printer.getName();
-//		if (result == null)
-//			result = "Ejecución de Regla " + rule.getName() + " ha retornado null";
-		return result.toString();
-	}
-	
-	public Object executeScript(int AD_Rule_ID) {
-		MRule rule = MRule.get(getCtx(), AD_Rule_ID);
-		Object result = null;
-		Object m_description = null;
-		String errorMsg = "";
-		try {
-			Scriptlet engine = new Scriptlet(Scriptlet.VARIABLE, rule.getScript(), m_scriptCtx);
-			Exception ex = engine.execute();
-			m_description = engine.getDescription();
-			if (m_description != null) {
-				if (m_description.toString().length() >= "AdempiereException"
-						.length())
-					if (m_description.toString().contains("AdempiereException")) {
-						errorMsg = m_description.toString();
-						throw ex;
-					}
+	protected String doIt() throws Exception {	
+		if(p_LVE_FiscalPrinter_ID != 0) {
+			fiscalPrinter = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
+			port = fiscalPrinter.getLVE_FiscalPort();
+			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
+			status = LVE_FiscalPrinter.dllPnP.PFestatus(p_TypeStatus);
+			if("OK".equals(status)) {
+				fiscalPrinter.setIsConnected(true);
+				fiscalPrinter.saveEx();
+			} else {
+				fiscalPrinter.setIsConnected(false);
+				fiscalPrinter.saveEx();
 			}
-			if (ex != null) {
-
-				throw ex;
-			}
-			result = engine.getResult(false);
-
-		} catch (Exception e) {
-			throw new AdempiereException("Execution error - @AD_Rule_ID@="
-					+ rule.getValue() + " \n " + errorMsg);
+			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 		}
-		return result;
+		return status;
 	}
 }

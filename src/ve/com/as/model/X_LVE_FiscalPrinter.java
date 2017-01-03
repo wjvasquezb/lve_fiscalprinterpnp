@@ -34,7 +34,7 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20161230L;
+	private static final long serialVersionUID = 20170103L;
 
     /** Standard Constructor */
     public X_LVE_FiscalPrinter (Properties ctx, int LVE_FiscalPrinter_ID, String trxName)
@@ -262,6 +262,23 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 	public String getLVE_CloseZ_Process () 
 	{
 		return (String)get_Value(COLUMNNAME_LVE_CloseZ_Process);
+	}
+
+	/** Set Fiscal Port.
+		@param LVE_FiscalPort Fiscal Port	  */
+	public void setLVE_FiscalPort (int LVE_FiscalPort)
+	{
+		set_Value (COLUMNNAME_LVE_FiscalPort, Integer.valueOf(LVE_FiscalPort));
+	}
+
+	/** Get Fiscal Port.
+		@return Fiscal Port	  */
+	public int getLVE_FiscalPort () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_LVE_FiscalPort);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
 	}
 
 	/** Set Fiscal Printer.

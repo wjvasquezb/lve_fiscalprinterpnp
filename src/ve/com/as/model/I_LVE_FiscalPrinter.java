@@ -32,7 +32,7 @@ public interface I_LVE_FiscalPrinter
     /** TableName=LVE_FiscalPrinter */
     public static final String Table_Name = "LVE_FiscalPrinter";
 
-    /** AD_Table_ID=1000027 */
+    /** AD_Table_ID=1000065 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -206,6 +206,15 @@ public interface I_LVE_FiscalPrinter
 
 	/** Get Close Z Process	  */
 	public String getLVE_CloseZ_Process();
+
+    /** Column name LVE_FiscalPort */
+    public static final String COLUMNNAME_LVE_FiscalPort = "LVE_FiscalPort";
+
+	/** Set Fiscal Port	  */
+	public void setLVE_FiscalPort (int LVE_FiscalPort);
+
+	/** Get Fiscal Port	  */
+	public int getLVE_FiscalPort();
 
     /** Column name LVE_FiscalPrinter_ID */
     public static final String COLUMNNAME_LVE_FiscalPrinter_ID = "LVE_FiscalPrinter_ID";
