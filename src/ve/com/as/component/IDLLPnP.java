@@ -53,7 +53,7 @@ public interface IDLLPnP extends Library {
 	 * 		- NP: Puerto No Abierto
 	 * 		- TO: Se excedió el tiempo de respuesta esperado del equipo 
 	 */
-	public String PFTotal();
+	public String PFtotal();
 	
 	public String PFCortar();
 	

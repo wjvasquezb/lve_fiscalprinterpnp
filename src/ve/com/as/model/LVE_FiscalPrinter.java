@@ -73,8 +73,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = "Imprimir Factura Fiscal: LVE_FiscalPrinter()";
 		log.info(msg);
 		msg = "Se carga la librería";
-		System.load("C:\\adempiere-client\\PnP\\pnpdlltest.dll");
-		dllPnP = (IDLLPnP)Native.loadLibrary("pnpdlltest", IDLLPnP.class);  
+		System.load("C:\\adempiere-client\\PnP\\pnpdll.dll");
+		dllPnP = (IDLLPnP)Native.loadLibrary("pnpdll", IDLLPnP.class);  
 	}
 
 	@Override
@@ -208,14 +208,18 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				if(!msg.equals("OK"))
 					return "ERROR agregando Lineas - " + msg;
 		}
-		msg = dllPnP.PFTotal();
+		}
+		
+		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
 		
-		}
-		
 		/**	Obtener Información de la Impresora Fiscal	**/
 		String result = dllPnP.PFultimo();
+		
+		msg = dllPnP.PFcierrapuerto();
+		if(!msg.equals("OK"))
+			return "ERROR agregando Total al Documento Fiscal - " + msg;
 		return "";
 	}
 	
