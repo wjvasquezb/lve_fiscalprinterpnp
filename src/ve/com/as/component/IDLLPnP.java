@@ -1,6 +1,7 @@
 package ve.com.as.component;
 
 import com.sun.jna.Library;
+import com.sun.jna.win32.StdCallLibrary;
 /**
  * 
  * Interface for to call funtions of DLLPnP
@@ -8,7 +9,7 @@ import com.sun.jna.Library;
  * @author Ing. Victor Suárez - victor.suarez.is@gmail.com - 01/2017 - Venezuela
  * 
  */
-public interface IDLLPnP extends Library {
+public interface IDLLPnP extends StdCallLibrary {
 
 	/**	Abrir Puerto Impresora
 	 * @param Port - Puerto Impresora Fiscal
