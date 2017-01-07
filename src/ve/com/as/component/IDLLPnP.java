@@ -1,6 +1,5 @@
 package ve.com.as.component;
 
-import com.sun.jna.Library;
 import com.sun.jna.win32.StdCallLibrary;
 /**
  * 
@@ -68,7 +67,7 @@ public interface IDLLPnP extends StdCallLibrary {
 	
 	public String PFreset();
 	
-	public String PFserial();
+	public String PFSerial();
 	
 	public String PFTfiscal(String Text);
 	

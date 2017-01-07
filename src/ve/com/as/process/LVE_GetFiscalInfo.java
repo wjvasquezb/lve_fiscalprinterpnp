@@ -39,6 +39,8 @@ public class LVE_GetFiscalInfo extends SvrProcess {
 			port = fiscalPrinter.getLVE_FiscalPort();
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
 			status = LVE_FiscalPrinter.dllPnP.PFestatus(p_TypeStatus);
+			LVE_FiscalPrinter.dllPnP.PFSerial();
+			String serial = LVE_FiscalPrinter.dllPnP.PFultimo();
 			if("OK".equals(status)) {
 				fiscalPrinter.setIsConnected(true);
 				fiscalPrinter.saveEx();
