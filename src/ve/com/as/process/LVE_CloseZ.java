@@ -15,6 +15,7 @@ public class LVE_CloseZ extends SvrProcess {
 	public MLVEFiscalPrinter fiscalPrinter = null;
 	public int port = 0;
 	public String status = "";
+	public String fiscalInfo = "";
 	
 	@Override
 	protected void prepare() {
@@ -36,6 +37,10 @@ public class LVE_CloseZ extends SvrProcess {
 			port = fiscalPrinter.getLVE_FiscalPort();
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
 			status = LVE_FiscalPrinter.dllPnP.PFrepz();
+			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
+			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
+			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
+			fiscalPrinter.setLVE_FPError(fiscalInfo);
 			if("OK".equals(status)) {
 				fiscalPrinter.setIsConnected(true);
 				fiscalPrinter.saveEx();
@@ -43,7 +48,6 @@ public class LVE_CloseZ extends SvrProcess {
 				fiscalPrinter.setIsConnected(false);
 				fiscalPrinter.saveEx();
 			}
-			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 		}
 		return status;
 	}

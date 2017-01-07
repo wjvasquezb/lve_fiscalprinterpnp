@@ -16,6 +16,7 @@ public class LVE_GetFiscalInfo extends SvrProcess {
 	public int port = 0;
 	public String status = "";
 	public String p_TypeStatus = "N";
+	public String fiscalInfo = "";
 	
 	@Override
 	protected void prepare() {
@@ -41,6 +42,8 @@ public class LVE_GetFiscalInfo extends SvrProcess {
 			status = LVE_FiscalPrinter.dllPnP.PFestatus(p_TypeStatus);
 			LVE_FiscalPrinter.dllPnP.PFSerial();
 			String serial = LVE_FiscalPrinter.dllPnP.PFultimo();
+			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
+			fiscalPrinter.setLVE_FPStatus(fiscalInfo + " - Serial: " + serial);
 			if("OK".equals(status)) {
 				fiscalPrinter.setIsConnected(true);
 				fiscalPrinter.saveEx();
