@@ -56,12 +56,12 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	public String invoiceInfo;
 	public BufferedReader bReader;
 	public String LVE_FiscalDocNo = "";
-	
-	CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
 	public String msg = "";
+	public String status = "";
 
 	public static IDLLPnP dllPnP;
 
+	CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
 	public LVE_FiscalPrinter() {
 		msg = "Imprimir Factura Fiscal: LVE_FiscalPrinter()";
 		log.info(msg);
@@ -113,15 +113,12 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
 			
 			MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
-			log.warning("Imprimiendo Factura " + invoice.getDocumentNo() + " de " + partner.getName() + " - " + partner.getTaxID());
 			invoiceInfo = printInvoice(partner, invoice, docType);
 			if(invoiceInfo.toUpperCase().contains("ERROR")) {
 				msg = invoiceInfo;
 				log.warning(msg);
 				return msg;
 			} else  {
-				if(invoiceInfo != null)
-					LVE_FiscalDocNo = invoiceInfo.split(",")[2];
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
@@ -149,7 +146,19 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		if(!msg.equals("OK"))
 			return "ERROR abriendo Puerto Impresora - " + msg;
 		
+		dllPnP.PFestatus("N");
+		status = dllPnP.PFultimo();
+		invoiceInfo = status;
+		log.warning("Estado Impresora Fiscal: " + status);
+		LVE_FiscalDocNo = status.split(",")[9];
+		if(!status.split(",")[3].equals("00")) {
+			msg = "ERROR - El estado de la Impresora Fiscal no es correcto: " + status.split(",")[3].equals("00");
+			log.warning(msg);
+			return msg;
+		}
+		
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARInvoice)) {
+			log.warning("Imprimiendo Factura Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			msg = dllPnP.PFabrefiscal(name, taxID);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
@@ -177,6 +186,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					return "ERROR agregando Lineas - " + msg;
 		}
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
+			log.warning("Imprimiendo Nota de Crédito Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), invoice.get_ValueAsInt(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_InvoiceAffected")), invoice.get_TrxName());
 			String date = formatDate(invoiceAffected.getDateAcct());
 			String hour = formatHour(invoiceAffected.getDateAcct());
@@ -213,13 +223,16 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
 		
-		/**	Obtener Información de la Impresora Fiscal	**/
-		String fiscalInf = dllPnP.PFultimo();
+		/**	Obtener Número de Nota de Crédito Fiscal	**/
+		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)) {
+			invoiceInfo = dllPnP.PFultimo();
+			LVE_FiscalDocNo = invoiceInfo.split(",")[2];
+		}
 		
 		msg = dllPnP.PFcierrapuerto();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
-		return fiscalInf;
+		return invoiceInfo;
 	}
 	
 	private String formatHour(java.sql.Timestamp timestamp) {

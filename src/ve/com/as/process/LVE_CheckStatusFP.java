@@ -64,6 +64,7 @@ public class LVE_CheckStatusFP extends SvrProcess {
 		String lastZ = fiscalInf[11];
 		
 		fiscalPrinter.setLVE_FPStatus(statusPinter);
+		fiscalPrinter.setLVE_FPError(fiscalInfo);
 		fiscalPrinter.setDatePrinter(datePinter);
 		fiscalPrinter.setQtyInvoiceDay(new BigDecimal(qtyInvoices));
 		fiscalPrinter.setLVE_LastZNo(lastZ);

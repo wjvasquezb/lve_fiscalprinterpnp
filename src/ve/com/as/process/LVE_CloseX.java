@@ -40,6 +40,7 @@ public class LVE_CloseX extends SvrProcess {
 			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
+			fiscalPrinter.setLVE_FPError(fiscalInfo);
 			if("OK".equals(status)) {
 				fiscalPrinter.setIsConnected(true);
 				fiscalPrinter.saveEx();
