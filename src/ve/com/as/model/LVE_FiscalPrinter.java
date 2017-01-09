@@ -150,13 +150,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		status = dllPnP.PFultimo();
 		invoiceInfo = status;
 		log.warning("Estado Impresora Fiscal: " + status);
-		LVE_FiscalDocNo = status.split(",")[9];
 		if(!status.split(",")[3].equals("00")) {
-			msg = "ERROR - El estado de la Impresora Fiscal no es correcto: " + status.split(",")[3].equals("00");
+			msg = "ERROR - El estado de la Impresora Fiscal no es correcto: " + status.split(",")[3];
 			log.warning(msg);
 			return msg;
 		}
-		
+		int LVE_FiscalDocNoStr = Integer.valueOf(status.split(",")[9]) + 1;
+		LVE_FiscalDocNo = String.valueOf(LVE_FiscalDocNoStr);
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARInvoice)) {
 			log.warning("Imprimiendo Factura Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			msg = dllPnP.PFabrefiscal(name, taxID);
