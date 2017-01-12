@@ -117,9 +117,10 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
 			
 			MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
+			String text = "Ficha: " + partner.getValue() + " - DocNo: " + invoice.getDocumentNo();
 			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0)
 				partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
-			invoiceInfo = printInvoice(partner, invoice, docType);
+			invoiceInfo = printInvoice(partner, invoice, docType, text);
 			if(invoiceInfo.toUpperCase().contains("ERROR")) {
 				msg = invoiceInfo;
 				log.warning(msg);
@@ -134,14 +135,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return null;
 	}
 
-	private String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType) {
+	private String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType, String text) {
 		PO taxIdType = new Query(partner.getCtx(), MTable.get(partner.getCtx(), "LCO_TaxIdType"), "LCO_TaxIdType_ID =? ", partner.get_TrxName()).setParameters(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID"))).first();			
 		String typePerson = taxIdType.get_Value("Name").toString();
 		
 		/**	DATOS DE LA FACTURA FISCAL	**/
 		String name = partner.getName().toUpperCase();
 		String taxID = typePerson + partner.getTaxID();
-		String text = "Ficha: " + partner.getValue() + " - DocNo: " + invoice.getDocumentNo();
 		int fiscalPrinterID = (int) docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "LVE_FiscalPrinter_ID")); 
 		MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), fiscalPrinterID, invoice.get_TrxName()); 
 		int port = fiscalPrinter.getLVE_FiscalPort();
