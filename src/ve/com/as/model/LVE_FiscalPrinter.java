@@ -29,6 +29,7 @@ import org.compiere.model.MColumn;
 import org.compiere.model.MDocType;
 import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
+import org.compiere.model.MOrderLine;
 import org.compiere.model.MProduct;
 import org.compiere.model.MTable;
 import org.compiere.model.MTax;
@@ -81,6 +82,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		if(client != null)
 			ad_client_id = client.getAD_Client_ID();
 		engine.addDocValidate(MInvoice.Table_Name, this);
+		engine.addModelChange(MOrderLine.Table_Name, this);
+		engine.addModelChange(MInvoiceLine.Table_Name, this);
 	}
 
 	@Override
@@ -97,6 +100,40 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	@Override
 	public String modelChange(PO po, int type) throws Exception {
 		log.warning("------ Validating Model: " + po.get_TableName() + " with type: " + type);
+		
+		if(type != TYPE_AFTER_CHANGE && type != TYPE_AFTER_NEW) 
+			return null;
+		if(!po.get_TableName().equals(MOrderLine.Table_Name) && !po.get_TableName().equals(MInvoiceLine.Table_Name))
+			return null;
+
+		if(po.get_TableName().equals(MOrderLine.Table_Name)) {
+			MOrderLine orderLine = (MOrderLine) po;
+			String description = orderLine.getDescription();
+			if(orderLine.getM_Product_ID() != 0) {
+				MProduct product = new MProduct(orderLine.getCtx(), orderLine.getM_Product_ID(), orderLine.get_TrxName());
+				description = product.getName();
+			} 
+			if(orderLine.getC_Charge_ID() != 0) {
+				MCharge charge = new MCharge(orderLine.getCtx(), orderLine.getC_Charge_ID(), orderLine.get_TrxName());
+				description = charge.getName();
+			}
+			if(description == null || description == "")
+				return "Debe agregar una Descripción, un Producto o un Cargo.";
+		}
+		if(po.get_TableName().equals(MInvoiceLine.Table_Name)) {
+			MInvoiceLine invoiceLine = (MInvoiceLine) po;
+			String description = invoiceLine.getDescription();
+			if(invoiceLine.getM_Product_ID() != 0) {
+				MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
+				description = product.getName();
+			} 
+			if(invoiceLine.getC_Charge_ID() != 0) {
+				MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
+				description = charge.getName();
+			}
+			if(description == null || description == "")
+				return "Debe agregar una Descripción, un Producto o un Cargo.";
+		}
 		return null;
 	}
 
