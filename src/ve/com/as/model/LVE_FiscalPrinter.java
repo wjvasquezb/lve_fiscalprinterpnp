@@ -268,8 +268,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		
 		/**	Obtener Número de Nota de Crédito Fiscal	**/
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)) {
+			dllPnP.PFestatus("T");
 			invoiceInfo = dllPnP.PFultimo();
-			LVE_FiscalDocNo = invoiceInfo.split(",")[2];
+			LVE_FiscalDocNo = invoiceInfo.split(",")[7];
 		}
 		
 		msg = dllPnP.PFcierrapuerto();

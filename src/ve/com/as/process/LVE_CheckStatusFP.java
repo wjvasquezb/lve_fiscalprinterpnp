@@ -19,6 +19,7 @@ public class LVE_CheckStatusFP extends SvrProcess {
 	public String status = "";
 	public String fiscalInfo = "";
 	public String serialFP = "";
+	public String lastCN = "";
 	
 	@Override
 	protected void prepare() {
@@ -41,6 +42,8 @@ public class LVE_CheckStatusFP extends SvrProcess {
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
 			status = LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
+			LVE_FiscalPrinter.dllPnP.PFestatus("T");
+			lastCN = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFSerial();
 			serialFP = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
@@ -69,6 +72,8 @@ public class LVE_CheckStatusFP extends SvrProcess {
 		fiscalPrinter.setQtyInvoiceDay(new BigDecimal(qtyInvoices));
 		fiscalPrinter.setLVE_LastZNo(lastZ);
 		fiscalPrinter.setLVE_QtyZ(new BigDecimal(lastZ));
+		fiscalPrinter.setLastInvFiscalNo(fiscalInf[9]);
+		fiscalPrinter.setLastCNFiscalNo(lastCN.split(",")[7]);
 		fiscalPrinter.saveEx();
 	}
 
