@@ -232,7 +232,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			log.warning("Imprimiendo Nota de Crédito Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), invoice.get_ValueAsInt(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_InvoiceAffected")), invoice.get_TrxName());
 			String date = formatDate(invoiceAffected.getDateAcct());
-			String hour = formatHour(invoiceAffected.getDateAcct());
+			String hour = status.split(",")[6].substring(0, 4);
 			
 			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffected.get_ValueAsString("LVE_FiscalDocNo"), fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
