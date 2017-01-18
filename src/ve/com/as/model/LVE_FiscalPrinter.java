@@ -20,8 +20,6 @@ package ve.com.as.model;
 import java.io.BufferedReader;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
 import org.compiere.model.MBPartner;
 import org.compiere.model.MCharge;
 import org.compiere.model.MClient;
@@ -55,10 +53,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	
 	public int ad_client_id;
 	public String invoiceInfo;
+	public String creditNoteInfo;
 	public BufferedReader bReader;
 	public String LVE_FiscalDocNo = "";
 	public String msg = "";
 	public String status = "";
+	public String LVE_FiscalHour = "";
+	public String LVE_FiscalDate = "";
 
 	public static IDLLPnP dllPnP;
 
@@ -164,6 +165,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return msg;
 			} else  {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
+				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
+				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
 				log.warning(msg);
@@ -191,6 +194,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		
 		dllPnP.PFestatus("N");
 		status = dllPnP.PFultimo();
+		LVE_FiscalHour = status.split(",")[6].substring(0, 4);
+		LVE_FiscalDate = formatDate(status.split(",")[5]);
 		invoiceInfo = status;
 		log.warning("Estado Impresora Fiscal: " + status);
 		if(!status.split(",")[3].equals("00")) {
@@ -231,8 +236,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
 			log.warning("Imprimiendo Nota de Crédito Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), invoice.get_ValueAsInt(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_InvoiceAffected")), invoice.get_TrxName());
-			String date = formatDate(invoiceAffected.getDateAcct());
-			String hour = status.split(",")[6].substring(0, 4);
+			String date = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"));
+			String hour = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"));
 			
 			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffected.get_ValueAsString("LVE_FiscalDocNo"), fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
@@ -269,8 +274,8 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		/**	Obtener Número de Nota de Crédito Fiscal	**/
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)) {
 			dllPnP.PFestatus("T");
-			invoiceInfo = dllPnP.PFultimo();
-			LVE_FiscalDocNo = invoiceInfo.split(",")[7];
+			creditNoteInfo = dllPnP.PFultimo();
+			LVE_FiscalDocNo = creditNoteInfo.split(",")[7];
 		}
 		
 		msg = dllPnP.PFcierrapuerto();
@@ -278,14 +283,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
 		return invoiceInfo;
 	}
-	
-	private String formatHour(java.sql.Timestamp timestamp) {
-		String hourStr = new SimpleDateFormat("HHmm").format(timestamp);
-		return hourStr;
-	}
 
-	private String formatDate(java.sql.Timestamp timestamp) {
-		String dateStr = new SimpleDateFormat("ddMMyyy").format(timestamp);
+	private String formatDate(String fiscalDate) {
+		String dateStr = fiscalDate.substring(4,6) + fiscalDate.substring(2,4) + fiscalDate.substring(0,2);
 		return dateStr;
 	}
 
