@@ -204,7 +204,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			return msg;
 		}
 		int LVE_FiscalDocNoStr = Integer.valueOf(status.split(",")[9]) + 1;
-		LVE_FiscalDocNo = String.valueOf(LVE_FiscalDocNoStr);
+		LVE_FiscalDocNo = String.format("%08d",LVE_FiscalDocNoStr);
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARInvoice)) {
 			log.warning("Imprimiendo Factura Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			msg = dllPnP.PFabrefiscal(name, taxID);
@@ -234,12 +234,22 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					return "ERROR agregando Lineas - " + msg;
 		}
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
-			log.warning("Imprimiendo Nota de Crédito Fiscal de " + partner.getName() + " - " + partner.getTaxID());
-			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), invoice.get_ValueAsInt(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_InvoiceAffected")), invoice.get_TrxName());
+			/**	Obtener Número de Nota de Crédito Fiscal	**/
+			dllPnP.PFestatus("T");
+			creditNoteInfo = dllPnP.PFultimo();
+			if(creditNoteInfo.split(",").length <= 7)
+				creditNoteInfo = "0000,0000,45,00,45,170118,151119,00000000";
+			log.warning("Datos de la Nota de Crédito: " + creditNoteInfo);
+			int LVE_creditNoteNoStr = Integer.valueOf(creditNoteInfo.split(",")[7]) + 1;
+			LVE_FiscalDocNo = String.format("%08d", LVE_creditNoteNoStr);
+			
+			log.warning("Imprimiendo Nota de Crédito Fiscal N° " + LVE_FiscalDocNo + " de " + partner.getName() + " - " + partner.getTaxID());
+			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
 			String date = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"));
 			String hour = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"));
+			String invoiceAffectedNo = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"));
 			
-			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffected.get_ValueAsString("LVE_FiscalDocNo"), fiscalPrinter.getLVE_SerialFiscal(), date, hour);
+			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffectedNo, fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
 			msg = dllPnP.PFTfiscal(text);
@@ -270,13 +280,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
-		
-		/**	Obtener Número de Nota de Crédito Fiscal	**/
-		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)) {
-			dllPnP.PFestatus("T");
-			creditNoteInfo = dllPnP.PFultimo();
-			LVE_FiscalDocNo = creditNoteInfo.split(",")[7];
-		}
 		
 		msg = dllPnP.PFcierrapuerto();
 		if(!msg.equals("OK"))
