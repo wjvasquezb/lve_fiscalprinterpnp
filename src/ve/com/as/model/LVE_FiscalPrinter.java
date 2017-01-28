@@ -20,6 +20,7 @@ package ve.com.as.model;
 import java.io.BufferedReader;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+
 import org.compiere.model.MBPartner;
 import org.compiere.model.MCharge;
 import org.compiere.model.MClient;
@@ -52,18 +53,18 @@ import com.sun.jna.Native;
 public class LVE_FiscalPrinter implements ModelValidator {
 	
 	public int ad_client_id;
-	public String invoiceInfo;
-	public String creditNoteInfo;
+	public static String invoiceInfo;
+	public static String creditNoteInfo;
 	public BufferedReader bReader;
-	public String LVE_FiscalDocNo = "";
-	public String msg = "";
-	public String status = "";
-	public String LVE_FiscalHour = "";
-	public String LVE_FiscalDate = "";
+	public static String LVE_FiscalDocNo = "";
+	public static String msg = "";
+	public static String status = "";
+	public static String LVE_FiscalHour = "";
+	public static String LVE_FiscalDate = "";
 
 	public static IDLLPnP dllPnP;
 
-	CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
+	static CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
 	
 	public LVE_FiscalPrinter() {
 		msg = "Imprimir Factura Fiscal: LVE_FiscalPrinter()";
@@ -167,6 +168,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
+				invoice.setIsPrinted(true);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
 				log.warning(msg);
@@ -175,12 +177,12 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return null;
 	}
 
-	private String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType, String text) {
+	public static String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType, String text) {
 		PO taxIdType = new Query(partner.getCtx(), MTable.get(partner.getCtx(), "LCO_TaxIdType"), "LCO_TaxIdType_ID =? ", partner.get_TrxName()).setParameters(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID"))).first();			
 		String typePerson = taxIdType.get_Value("Name").toString();
 		
 		/**	DATOS DE LA FACTURA FISCAL	**/
-		String name = partner.getName().toUpperCase();
+		String name = cleanName(partner.getName().toUpperCase());
 		String taxID = typePerson + partner.getTaxID();
 		int fiscalPrinterID = (int) docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "LVE_FiscalPrinter_ID")); 
 		MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), fiscalPrinterID, invoice.get_TrxName()); 
@@ -287,12 +289,12 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return invoiceInfo;
 	}
 
-	private String formatDate(String fiscalDate) {
+	private static String formatDate(String fiscalDate) {
 		String dateStr = fiscalDate.substring(4,6) + fiscalDate.substring(2,4) + fiscalDate.substring(0,2);
 		return dateStr;
 	}
 
-	public String formatQty(BigDecimal monto) {
+	public static String formatQty(BigDecimal monto) {
 		String value="";		
 		DecimalFormat decf = new DecimalFormat("######.000");
 		value = decf.format(monto);
@@ -300,7 +302,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return value;
 	}
 	
-	public String formatIVA(BigDecimal monto) {
+	public static String formatIVA(BigDecimal monto) {
 		String value="";		
 		DecimalFormat decf = new DecimalFormat("######.00");
 		value = decf.format(monto);
@@ -308,11 +310,25 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return value;
 	}
 	
-	public String formatPrice(BigDecimal monto) {
+	public static String formatPrice(BigDecimal monto) {
 		String value="";		
 		DecimalFormat decf = new DecimalFormat("######.00");
 		value = decf.format(monto);
 		value = value.replace(",", ".");
 		return value;
+	}
+	
+	private static String cleanName(String value){	
+		String name="";
+		int size=value.length();
+		
+		 for (int i = 0; i < size; i++){ 
+			 if ((value.charAt(i)==',') || (value.charAt(i)=='.')){
+				 name+= ' ';
+			 }else{
+				 name+= value.charAt(i);
+			 }		  		 
+		 }	
+	return name.trim();
 	}
 }

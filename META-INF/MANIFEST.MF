@@ -15,3 +15,4 @@ Require-Bundle: org.adempiere.base;bundle-version="3.1.0",
  org.adempiere.base.process;bundle-version="3.1.0"
 Bundle-ClassPath: resources/PnP/jna-4.1.0.jar,
  .
+Export-Package: ve.com.as.model
