@@ -32,7 +32,7 @@ public interface I_LVE_CloseZ
     /** TableName=LVE_CloseZ */
     public static final String Table_Name = "LVE_CloseZ";
 
-    /** AD_Table_ID=1000029 */
+    /** AD_Table_ID=1000067 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -91,6 +91,21 @@ public interface I_LVE_CloseZ
 	/** Get Base Taxable Extra 2	  */
 	public BigDecimal getBaseTaxableExtra2();
 
+    /** Column name C_Invoice_ID */
+    public static final String COLUMNNAME_C_Invoice_ID = "C_Invoice_ID";
+
+	/** Set Invoice.
+	  * Invoice Identifier
+	  */
+	public void setC_Invoice_ID (int C_Invoice_ID);
+
+	/** Get Invoice.
+	  * Invoice Identifier
+	  */
+	public int getC_Invoice_ID();
+
+	public org.compiere.model.I_C_Invoice getC_Invoice() throws RuntimeException;
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 
@@ -129,6 +144,15 @@ public interface I_LVE_CloseZ
 	/** Get ExemptSales	  */
 	public BigDecimal getExemptSales();
 
+    /** Column name ExemptSalesCN */
+    public static final String COLUMNNAME_ExemptSalesCN = "ExemptSalesCN";
+
+	/** Set ExemptSalesCN	  */
+	public void setExemptSalesCN (BigDecimal ExemptSalesCN);
+
+	/** Get ExemptSalesCN	  */
+	public BigDecimal getExemptSalesCN();
+
     /** Column name GeneralTaxRate */
     public static final String COLUMNNAME_GeneralTaxRate = "GeneralTaxRate";
 
@@ -137,6 +161,15 @@ public interface I_LVE_CloseZ
 
 	/** Get General Tax Rate	  */
 	public BigDecimal getGeneralTaxRate();
+
+    /** Column name GeneralTaxRateCN */
+    public static final String COLUMNNAME_GeneralTaxRateCN = "GeneralTaxRateCN";
+
+	/** Set General Tax Rate CN	  */
+	public void setGeneralTaxRateCN (BigDecimal GeneralTaxRateCN);
+
+	/** Get General Tax Rate CN	  */
+	public BigDecimal getGeneralTaxRateCN();
 
     /** Column name IsActive */
     public static final String COLUMNNAME_IsActive = "IsActive";
@@ -216,6 +249,15 @@ public interface I_LVE_CloseZ
 	/** Get Reduced Rate Tax	  */
 	public BigDecimal getReducedRateTax();
 
+    /** Column name ReducedRateTaxCN */
+    public static final String COLUMNNAME_ReducedRateTaxCN = "ReducedRateTaxCN";
+
+	/** Set Reduced Rate Tax CN	  */
+	public void setReducedRateTaxCN (BigDecimal ReducedRateTaxCN);
+
+	/** Get Reduced Rate Tax CN	  */
+	public BigDecimal getReducedRateTaxCN();
+
     /** Column name SalesAdditionalRate */
     public static final String COLUMNNAME_SalesAdditionalRate = "SalesAdditionalRate";
 
@@ -224,6 +266,15 @@ public interface I_LVE_CloseZ
 
 	/** Get Sales Additional Rate	  */
 	public BigDecimal getSalesAdditionalRate();
+
+    /** Column name SalesAdditionalRateCN */
+    public static final String COLUMNNAME_SalesAdditionalRateCN = "SalesAdditionalRateCN";
+
+	/** Set Sales Additional Rate CN	  */
+	public void setSalesAdditionalRateCN (BigDecimal SalesAdditionalRateCN);
+
+	/** Get Sales Additional Rate CN	  */
+	public BigDecimal getSalesAdditionalRateCN();
 
     /** Column name SalesGeneralFee */
     public static final String COLUMNNAME_SalesGeneralFee = "SalesGeneralFee";
@@ -234,6 +285,15 @@ public interface I_LVE_CloseZ
 	/** Get Sales General Fee	  */
 	public BigDecimal getSalesGeneralFee();
 
+    /** Column name SalesGeneralFeeCN */
+    public static final String COLUMNNAME_SalesGeneralFeeCN = "SalesGeneralFeeCN";
+
+	/** Set Sales General Fee CN	  */
+	public void setSalesGeneralFeeCN (BigDecimal SalesGeneralFeeCN);
+
+	/** Get Sales General Fee CN	  */
+	public BigDecimal getSalesGeneralFeeCN();
+
     /** Column name SalesReducedRate */
     public static final String COLUMNNAME_SalesReducedRate = "SalesReducedRate";
 
@@ -242,6 +302,15 @@ public interface I_LVE_CloseZ
 
 	/** Get Sales Reduced Rate	  */
 	public BigDecimal getSalesReducedRate();
+
+    /** Column name SalesReducedRateCN */
+    public static final String COLUMNNAME_SalesReducedRateCN = "SalesReducedRateCN";
+
+	/** Set Sales Reduced Rate CN	  */
+	public void setSalesReducedRateCN (BigDecimal SalesReducedRateCN);
+
+	/** Get Sales Reduced Rate CN	  */
+	public BigDecimal getSalesReducedRateCN();
 
     /** Column name SalesRep_ID */
     public static final String COLUMNNAME_SalesRep_ID = "SalesRep_ID";
@@ -267,6 +336,15 @@ public interface I_LVE_CloseZ
 	/** Get SubTotal IVA	  */
 	public BigDecimal getSubTotalIVA();
 
+    /** Column name SubTotalIVACN */
+    public static final String COLUMNNAME_SubTotalIVACN = "SubTotalIVACN";
+
+	/** Set SubTotal IVA CN	  */
+	public void setSubTotalIVACN (BigDecimal SubTotalIVACN);
+
+	/** Get SubTotal IVA CN	  */
+	public BigDecimal getSubTotalIVACN();
+
     /** Column name SubTotalTaxBase */
     public static final String COLUMNNAME_SubTotalTaxBase = "SubTotalTaxBase";
 
@@ -275,6 +353,15 @@ public interface I_LVE_CloseZ
 
 	/** Get Subtotal of Taxable Bases	  */
 	public BigDecimal getSubTotalTaxBase();
+
+    /** Column name SubTotalTaxBaseCN */
+    public static final String COLUMNNAME_SubTotalTaxBaseCN = "SubTotalTaxBaseCN";
+
+	/** Set Subtotal of Taxable Bases CN	  */
+	public void setSubTotalTaxBaseCN (BigDecimal SubTotalTaxBaseCN);
+
+	/** Get Subtotal of Taxable Bases CN	  */
+	public BigDecimal getSubTotalTaxBaseCN();
 
     /** Column name TaxableBaseExtra */
     public static final String COLUMNNAME_TaxableBaseExtra = "TaxableBaseExtra";
@@ -311,6 +398,15 @@ public interface I_LVE_CloseZ
 
 	/** Get Tax Additional Fee	  */
 	public BigDecimal getTaxAdditionalFee();
+
+    /** Column name TaxAdditionalFeeCN */
+    public static final String COLUMNNAME_TaxAdditionalFeeCN = "TaxAdditionalFeeCN";
+
+	/** Set Tax Additional Fee CN	  */
+	public void setTaxAdditionalFeeCN (BigDecimal TaxAdditionalFeeCN);
+
+	/** Get Tax Additional Fee CN	  */
+	public BigDecimal getTaxAdditionalFeeCN();
 
     /** Column name TotalAmt */
     public static final String COLUMNNAME_TotalAmt = "TotalAmt";

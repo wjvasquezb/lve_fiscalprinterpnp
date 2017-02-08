@@ -33,7 +33,7 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20161230L;
+	private static final long serialVersionUID = 20170207L;
 
     /** Standard Constructor */
     public X_LVE_CloseZ (Properties ctx, int LVE_CloseZ_ID, String trxName)
@@ -126,6 +126,34 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	public org.compiere.model.I_C_Invoice getC_Invoice() throws RuntimeException
+    {
+		return (org.compiere.model.I_C_Invoice)MTable.get(getCtx(), org.compiere.model.I_C_Invoice.Table_Name)
+			.getPO(getC_Invoice_ID(), get_TrxName());	}
+
+	/** Set Invoice.
+		@param C_Invoice_ID 
+		Invoice Identifier
+	  */
+	public void setC_Invoice_ID (int C_Invoice_ID)
+	{
+		if (C_Invoice_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, null);
+		else 
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, Integer.valueOf(C_Invoice_ID));
+	}
+
+	/** Get Invoice.
+		@return Invoice Identifier
+	  */
+	public int getC_Invoice_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_C_Invoice_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
 	/** Set Description.
 		@param Description 
 		Optional short description of the record
@@ -160,6 +188,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	/** Set ExemptSalesCN.
+		@param ExemptSalesCN ExemptSalesCN	  */
+	public void setExemptSalesCN (BigDecimal ExemptSalesCN)
+	{
+		set_Value (COLUMNNAME_ExemptSalesCN, ExemptSalesCN);
+	}
+
+	/** Get ExemptSalesCN.
+		@return ExemptSalesCN	  */
+	public BigDecimal getExemptSalesCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_ExemptSalesCN);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
 	/** Set General Tax Rate.
 		@param GeneralTaxRate General Tax Rate	  */
 	public void setGeneralTaxRate (BigDecimal GeneralTaxRate)
@@ -172,6 +217,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 	public BigDecimal getGeneralTaxRate () 
 	{
 		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_GeneralTaxRate);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set General Tax Rate CN.
+		@param GeneralTaxRateCN General Tax Rate CN	  */
+	public void setGeneralTaxRateCN (BigDecimal GeneralTaxRateCN)
+	{
+		set_Value (COLUMNNAME_GeneralTaxRateCN, GeneralTaxRateCN);
+	}
+
+	/** Get General Tax Rate CN.
+		@return General Tax Rate CN	  */
+	public BigDecimal getGeneralTaxRateCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_GeneralTaxRateCN);
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
@@ -295,6 +357,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	/** Set Reduced Rate Tax CN.
+		@param ReducedRateTaxCN Reduced Rate Tax CN	  */
+	public void setReducedRateTaxCN (BigDecimal ReducedRateTaxCN)
+	{
+		set_Value (COLUMNNAME_ReducedRateTaxCN, ReducedRateTaxCN);
+	}
+
+	/** Get Reduced Rate Tax CN.
+		@return Reduced Rate Tax CN	  */
+	public BigDecimal getReducedRateTaxCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_ReducedRateTaxCN);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
 	/** Set Sales Additional Rate.
 		@param SalesAdditionalRate Sales Additional Rate	  */
 	public void setSalesAdditionalRate (BigDecimal SalesAdditionalRate)
@@ -307,6 +386,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 	public BigDecimal getSalesAdditionalRate () 
 	{
 		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SalesAdditionalRate);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Sales Additional Rate CN.
+		@param SalesAdditionalRateCN Sales Additional Rate CN	  */
+	public void setSalesAdditionalRateCN (BigDecimal SalesAdditionalRateCN)
+	{
+		set_Value (COLUMNNAME_SalesAdditionalRateCN, SalesAdditionalRateCN);
+	}
+
+	/** Get Sales Additional Rate CN.
+		@return Sales Additional Rate CN	  */
+	public BigDecimal getSalesAdditionalRateCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SalesAdditionalRateCN);
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
@@ -329,6 +425,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	/** Set Sales General Fee CN.
+		@param SalesGeneralFeeCN Sales General Fee CN	  */
+	public void setSalesGeneralFeeCN (BigDecimal SalesGeneralFeeCN)
+	{
+		set_Value (COLUMNNAME_SalesGeneralFeeCN, SalesGeneralFeeCN);
+	}
+
+	/** Get Sales General Fee CN.
+		@return Sales General Fee CN	  */
+	public BigDecimal getSalesGeneralFeeCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SalesGeneralFeeCN);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
 	/** Set Sales Reduced Rate.
 		@param SalesReducedRate Sales Reduced Rate	  */
 	public void setSalesReducedRate (BigDecimal SalesReducedRate)
@@ -341,6 +454,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 	public BigDecimal getSalesReducedRate () 
 	{
 		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SalesReducedRate);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Sales Reduced Rate CN.
+		@param SalesReducedRateCN Sales Reduced Rate CN	  */
+	public void setSalesReducedRateCN (BigDecimal SalesReducedRateCN)
+	{
+		set_Value (COLUMNNAME_SalesReducedRateCN, SalesReducedRateCN);
+	}
+
+	/** Get Sales Reduced Rate CN.
+		@return Sales Reduced Rate CN	  */
+	public BigDecimal getSalesReducedRateCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SalesReducedRateCN);
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
@@ -391,6 +521,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	/** Set SubTotal IVA CN.
+		@param SubTotalIVACN SubTotal IVA CN	  */
+	public void setSubTotalIVACN (BigDecimal SubTotalIVACN)
+	{
+		set_Value (COLUMNNAME_SubTotalIVACN, SubTotalIVACN);
+	}
+
+	/** Get SubTotal IVA CN.
+		@return SubTotal IVA CN	  */
+	public BigDecimal getSubTotalIVACN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SubTotalIVACN);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
 	/** Set Subtotal of Taxable Bases.
 		@param SubTotalTaxBase Subtotal of Taxable Bases	  */
 	public void setSubTotalTaxBase (BigDecimal SubTotalTaxBase)
@@ -403,6 +550,23 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 	public BigDecimal getSubTotalTaxBase () 
 	{
 		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SubTotalTaxBase);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
+	/** Set Subtotal of Taxable Bases CN.
+		@param SubTotalTaxBaseCN Subtotal of Taxable Bases CN	  */
+	public void setSubTotalTaxBaseCN (BigDecimal SubTotalTaxBaseCN)
+	{
+		set_Value (COLUMNNAME_SubTotalTaxBaseCN, SubTotalTaxBaseCN);
+	}
+
+	/** Get Subtotal of Taxable Bases CN.
+		@return Subtotal of Taxable Bases CN	  */
+	public BigDecimal getSubTotalTaxBaseCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_SubTotalTaxBaseCN);
 		if (bd == null)
 			 return Env.ZERO;
 		return bd;
@@ -476,13 +640,30 @@ public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent
 		return bd;
 	}
 
+	/** Set Tax Additional Fee CN.
+		@param TaxAdditionalFeeCN Tax Additional Fee CN	  */
+	public void setTaxAdditionalFeeCN (BigDecimal TaxAdditionalFeeCN)
+	{
+		set_Value (COLUMNNAME_TaxAdditionalFeeCN, TaxAdditionalFeeCN);
+	}
+
+	/** Get Tax Additional Fee CN.
+		@return Tax Additional Fee CN	  */
+	public BigDecimal getTaxAdditionalFeeCN () 
+	{
+		BigDecimal bd = (BigDecimal)get_Value(COLUMNNAME_TaxAdditionalFeeCN);
+		if (bd == null)
+			 return Env.ZERO;
+		return bd;
+	}
+
 	/** Set Total Amount.
 		@param TotalAmt 
 		Total Amount
 	  */
 	public void setTotalAmt (BigDecimal TotalAmt)
 	{
-		set_ValueNoCheck (COLUMNNAME_TotalAmt, TotalAmt);
+		set_Value (COLUMNNAME_TotalAmt, TotalAmt);
 	}
 
 	/** Get Total Amount.
