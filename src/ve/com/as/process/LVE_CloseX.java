@@ -85,7 +85,7 @@ public class LVE_CloseX extends SvrProcess {
 	private void setCloseXInfo() {
 		fiscalInfoSplit = fiscalInfo.split(",");
 		if(fiscalInfoSplit.length < 14) {
-			msg = "No se puede obtener información compoleta de Cierre X";
+			msg = "No se puede obtener información compoleta de Cierre X - " + fiscalInfo;
 			log.warning(msg);
 		} else {
 			exemptSales = new BigDecimal(fiscalInfoSplit[2]);

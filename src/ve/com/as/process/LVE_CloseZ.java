@@ -84,7 +84,7 @@ public class LVE_CloseZ extends SvrProcess {
 	private void setCloseZInfo() {
 		fiscalInfoSplit = fiscalInfo.split(",");
 		if(fiscalInfoSplit.length < 14) {
-			msg = "No se puede obtener información compoleta de Cierre Z";
+			msg = "No se puede obtener información compoleta de Cierre Z - " + fiscalInfo;
 			log.warning(msg);
 		} else {
 			exemptSales = new BigDecimal(fiscalInfoSplit[2]);
