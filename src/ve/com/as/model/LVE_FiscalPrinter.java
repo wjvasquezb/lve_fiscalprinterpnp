@@ -61,6 +61,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	public static String status = "";
 	public static String LVE_FiscalHour = "";
 	public static String LVE_FiscalDate = "";
+	public static int LVE_Zno = 0;
 
 	public static IDLLPnP dllPnP;
 
@@ -168,6 +169,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
+				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_Zno"), String.valueOf(LVE_Zno));
 				invoice.setIsPrinted(true);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
@@ -198,6 +200,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		status = dllPnP.PFultimo();
 		LVE_FiscalHour = status.split(",")[6].substring(0, 4);
 		LVE_FiscalDate = formatDate(status.split(",")[5]);
+		LVE_Zno = Integer.valueOf(status.split(",")[11]) + 1;
 		invoiceInfo = status;
 		log.warning("Estado Impresora Fiscal: " + status);
 		if(!status.split(",")[3].equals("00")) {

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.logging.Level;
 
 import org.compiere.model.MInvoice;
+import org.compiere.model.MUser;
 import org.compiere.model.Query;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
@@ -24,7 +25,7 @@ public class LVE_CloseZ extends SvrProcess {
 	public String fiscalInfoSplit[];
 	public String msg = "";
 	
-	public String ZNo = "";
+	public int ZNo = 0;
 	public BigDecimal exemptSales = Env.ZERO;
 	public BigDecimal salesGeneralFee = Env.ZERO;
 	public BigDecimal generalTaxRate = Env.ZERO;
@@ -32,15 +33,28 @@ public class LVE_CloseZ extends SvrProcess {
 	public BigDecimal reducedRateTax = Env.ZERO;
 	public BigDecimal subTotalTaxBase = Env.ZERO;
 	public BigDecimal subTotalIVA = Env.ZERO;
-	public BigDecimal totalReturnsAmt = Env.ZERO;
 	public BigDecimal taxDiscount = Env.ZERO;
 	public BigDecimal taxableReturns = Env.ZERO;
+	public BigDecimal taxAdditionalFee = Env.ZERO;
+	public BigDecimal salesAdditionalRate = Env.ZERO;
+	
+	public BigDecimal exemptSalesCN = Env.ZERO;
 	public BigDecimal subTotalIVACN = Env.ZERO;
+	public BigDecimal salesGeneralFeeCN = Env.ZERO;
+	public BigDecimal generalTaxRateCN = Env.ZERO;
+	public BigDecimal salesReducedRateCN = Env.ZERO;
+	public BigDecimal reducedRateTaxCN = Env.ZERO;
+	public BigDecimal taxAdditionalFeeCN = Env.ZERO;
+	public BigDecimal salesAdditionalRateCN = Env.ZERO;
+	public BigDecimal subTotalTaxBaseCN = Env.ZERO;
+	public BigDecimal totalReturnsAmt = Env.ZERO;
+	
 	public BigDecimal totalZ = Env.ZERO;
 	public String LVE_ZDate = "";
 	public String statusZ = "";
 	public String lastFiscalDocNo = "";
 	public MInvoice invoice;
+	public MUser salesRep;
 	
 	@Override
 	protected void prepare() {
@@ -98,7 +112,7 @@ public class LVE_CloseZ extends SvrProcess {
 			salesReducedRate = new BigDecimal(fiscalInfoSplit[10]);
 			reducedRateTax = new BigDecimal(fiscalInfoSplit[11]);
 			if(statusZ.length() >= 12) {
-				ZNo = statusZ.split(",")[11];
+				ZNo = Integer.valueOf(statusZ.split(",")[11]) + 1;
 				lastFiscalDocNo = statusZ.split(",")[9];
 				invoice = new Query(getCtx(), MInvoice.Table_Name, "LVE_FiscalDocNo=?", get_TrxName())
 				.setParameters(lastFiscalDocNo).setOnlyActiveRecords(true).first();
@@ -113,25 +127,44 @@ public class LVE_CloseZ extends SvrProcess {
 		MLVECloseZ closeZ = new MLVECloseZ(getCtx(), 0,get_TrxName());
 		closeZ.setLVE_FiscalPrinter_ID(fiscalPrinter.get_ID());
 		closeZ.setAD_Org_ID(fiscalPrinter.getAD_Org_ID());
-		closeZ.setExemptSales(exemptSales);
-		closeZ.setSalesGeneralFee(salesGeneralFee);
-		closeZ.setGeneralTaxRate(generalTaxRate);
-		closeZ.setSalesReducedRate(salesReducedRate);
-		closeZ.setReducedRateTax(reducedRateTax);
-		closeZ.setSubTotalTaxBase(subTotalTaxBase);
-		closeZ.setSubTotalIVA(subTotalIVA);
-		closeZ.setTaxableReturns(taxableReturns);
-		closeZ.setSubTotalIVACN(subTotalIVACN);
+		closeZ.setSalesRep_ID(salesRep.get_ID());
+		closeZ.setExemptSales(formatNum(exemptSales));
+		closeZ.setSalesGeneralFee(formatNum(salesGeneralFee));
+		closeZ.setGeneralTaxRate(formatNum(generalTaxRate));
+		closeZ.setSalesReducedRate(formatNum(salesReducedRate));
+		closeZ.setReducedRateTax(formatNum(reducedRateTax));
+		closeZ.setSubTotalTaxBase(formatNum(subTotalTaxBase));
+		closeZ.setSubTotalIVA(formatNum(subTotalIVA));
+		closeZ.setTotalAmt(totalZ);
+		
+		closeZ.setTaxableReturns(formatNum(taxableReturns));
+		closeZ.setSubTotalIVACN(formatNum(subTotalIVACN));
+		closeZ.setExemptSalesCN(formatNum(exemptSalesCN));
+		closeZ.setSalesGeneralFeeCN(formatNum(salesGeneralFeeCN));
+		closeZ.setGeneralTaxRateCN(formatNum(generalTaxRateCN));
+		closeZ.setSalesReducedRateCN(formatNum(salesReducedRateCN));
+		closeZ.setReducedRateTaxCN(formatNum(reducedRateTaxCN));
+		closeZ.setTaxAdditionalFeeCN(formatNum(taxAdditionalFeeCN));
+		closeZ.setSalesAdditionalRateCN(formatNum(salesAdditionalRateCN));
+		closeZ.setSubTotalTaxBaseCN(formatNum(subTotalTaxBaseCN));
+		closeZ.setTotalReturnsAmt(formatNum(totalReturnsAmt));
+		
 		closeZ.setLVE_ZDate(formatDate(LVE_ZDate));
-		closeZ.setLVE_ZNo(ZNo);
+		closeZ.setLVE_ZNo(String.valueOf(ZNo));
 		if(invoice != null)
 			closeZ.setC_Invoice_ID(invoice.get_ID());
 		closeZ.saveEx();
+
 	}
 
 	private Timestamp formatDate(String lve_ZDate) {
-		String dateStr = "20" + lve_ZDate.substring(0,2) + "-" + lve_ZDate.substring(2,4) + "-" + lve_ZDate.substring(4,6);
+		String dateStr = "20" + lve_ZDate.substring(4,6) + "-" + lve_ZDate.substring(2,4) + "-" + lve_ZDate.substring(0,2) + " 00:00:00";
 		Timestamp zDate = Timestamp.valueOf(dateStr);
 		return zDate;
+	}
+	
+	private BigDecimal formatNum(BigDecimal num) {
+		num = num.divide(Env.ONEHUNDRED);
+		return num; 
 	}
 }
