@@ -76,10 +76,10 @@ public class LVE_CloseX extends SvrProcess {
 			fiscalPrinter = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
 			port = fiscalPrinter.getLVE_FiscalPort();
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
-			status = LVE_FiscalPrinter.dllPnP.PFrepx();
-			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			statusX = LVE_FiscalPrinter.dllPnP.PFultimo();
+			status = LVE_FiscalPrinter.dllPnP.PFrepx();
+			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
 			fiscalPrinter.setLVE_FPError(fiscalInfo);
@@ -108,20 +108,29 @@ public class LVE_CloseX extends SvrProcess {
 			generalTaxRate = new BigDecimal(fiscalInfoSplit[4]);
 			totalReturnsAmt =  new BigDecimal(fiscalInfoSplit[5]);
 			taxDiscount =  new BigDecimal(fiscalInfoSplit[6]);
-			taxableReturns =  new BigDecimal(fiscalInfoSplit[7]);
-			subTotalIVACN =  new BigDecimal(fiscalInfoSplit[8]);
 			salesReducedRate = new BigDecimal(fiscalInfoSplit[10]);
 			reducedRateTax = new BigDecimal(fiscalInfoSplit[11]);
+			
+			taxableReturns =  new BigDecimal(fiscalInfoSplit[7]);
+			salesGeneralFeeCN =  new BigDecimal(fiscalInfoSplit[8]);
+			generalTaxRateCN = new BigDecimal(fiscalInfoSplit[14]);
+			salesReducedRateCN = new BigDecimal(fiscalInfoSplit[15]);
+			reducedRateTaxCN = new BigDecimal(fiscalInfoSplit[16]);
+			
 			if(statusX.length() >= 12) {
 				ZNo = Integer.valueOf(statusX.split(",")[11]) + 1;
 				lastFiscalDocNo = statusX.split(",")[9];
-				LVE_XDate = statusX.split(",")[5];
+				LVE_XDate = statusX.split(",")[5] + statusX.split(",")[6];
 				invoice = new Query(getCtx(), MInvoice.Table_Name, "LVE_FiscalDocNo=?", get_TrxName())
 				.setParameters(lastFiscalDocNo).setOnlyActiveRecords(true).first();
 			}
-			subTotalTaxBase = salesGeneralFee.add(salesReducedRate).subtract(taxableReturns);
-			subTotalIVA = generalTaxRate.add(reducedRateTax).subtract(subTotalIVACN);
+			subTotalTaxBase = salesGeneralFee.add(salesReducedRate);
+			subTotalIVA = generalTaxRate.add(reducedRateTax);
 			totalX = subTotalTaxBase.add(subTotalIVA);
+			
+			subTotalTaxBaseCN = salesGeneralFeeCN.add(salesReducedRateCN);
+			subTotalIVACN = generalTaxRateCN.add(reducedRateTaxCN);
+			totalReturnsAmt = subTotalTaxBaseCN.add(subTotalIVACN);
 		}
 	}
 
@@ -135,9 +144,11 @@ public class LVE_CloseX extends SvrProcess {
 		closeX.setGeneralTaxRate(formatNum(generalTaxRate));
 		closeX.setSalesReducedRate(formatNum(salesReducedRate));
 		closeX.setReducedRateTax(formatNum(reducedRateTax));
+		closeX.setSalesAdditionalRate(salesAdditionalRate);
+		closeX.setTaxAdditionalFee(taxAdditionalFee);
 		closeX.setSubTotalTaxBase(formatNum(subTotalTaxBase));
 		closeX.setSubTotalIVA(formatNum(subTotalIVA));
-		closeX.setTotalAmt(totalX);
+		closeX.setTotalAmt(formatNum(totalX));
 		
 		closeX.setTaxableReturns(formatNum(taxableReturns));
 		closeX.setSubTotalIVACN(formatNum(subTotalIVACN));
@@ -159,7 +170,21 @@ public class LVE_CloseX extends SvrProcess {
 	}
 
 	private Timestamp formatDate(String lve_XDate) {
-		String dateStr = "20" + lve_XDate.substring(0,2) + "-" + lve_XDate.substring(2,4) + "-" + lve_XDate.substring(4,6) + " 00:00:00";
+		log.warning("Date: " + lve_XDate);
+		System.out.println("Date: " + lve_XDate);
+		String dateStr = "";
+		if(lve_XDate.length() < 2) 
+			dateStr = "2017-02-11 00:00:00"; 
+		else {
+		String anio = lve_XDate.substring(0,2);
+		String month = lve_XDate.substring(2,4);
+		String day = lve_XDate.substring(4,6);
+		String hour = lve_XDate.substring(6,8);
+		String min = lve_XDate.substring(8,10);
+		String ss = lve_XDate.substring(10,12);
+		dateStr = "20"+anio+"-"+month+"-"+day+" "+hour+":"+min+":"+ss;
+		}
+		log.warning("DateStr: " + dateStr);
 		Timestamp xDate = Timestamp.valueOf(dateStr);
 		return xDate;
 	}

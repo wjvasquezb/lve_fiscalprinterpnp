@@ -75,10 +75,10 @@ public class LVE_CloseZ extends SvrProcess {
 			fiscalPrinter = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
 			port = fiscalPrinter.getLVE_FiscalPort();
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
-			status = LVE_FiscalPrinter.dllPnP.PFrepz();
-			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			statusZ = LVE_FiscalPrinter.dllPnP.PFultimo();
+			status = LVE_FiscalPrinter.dllPnP.PFrepz();
+			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
 			fiscalPrinter.setLVE_FPError(fiscalInfo);
@@ -101,25 +101,35 @@ public class LVE_CloseZ extends SvrProcess {
 			msg = "No se puede obtener información compoleta de Cierre Z - " + fiscalInfo;
 			log.warning(msg);
 		} else {
+			salesRep = new MUser(getCtx(), Integer.valueOf(Env.getContext(getCtx(), "#AD_User_ID")), get_TrxName());
 			exemptSales = new BigDecimal(fiscalInfoSplit[2]);
 			salesGeneralFee = new BigDecimal(fiscalInfoSplit[3]);
 			generalTaxRate = new BigDecimal(fiscalInfoSplit[4]);
 			totalReturnsAmt =  new BigDecimal(fiscalInfoSplit[5]);
 			taxDiscount =  new BigDecimal(fiscalInfoSplit[6]);
-			taxableReturns =  new BigDecimal(fiscalInfoSplit[7]);
-			subTotalIVACN =  new BigDecimal(fiscalInfoSplit[8]);
-			LVE_ZDate =  fiscalInfoSplit[9];
 			salesReducedRate = new BigDecimal(fiscalInfoSplit[10]);
 			reducedRateTax = new BigDecimal(fiscalInfoSplit[11]);
+			
+			taxableReturns =  new BigDecimal(fiscalInfoSplit[7]);
+			salesGeneralFeeCN =  new BigDecimal(fiscalInfoSplit[8]);
+			generalTaxRateCN = new BigDecimal(fiscalInfoSplit[14]);
+			salesReducedRateCN = new BigDecimal(fiscalInfoSplit[15]);
+			reducedRateTaxCN = new BigDecimal(fiscalInfoSplit[16]);
+			
 			if(statusZ.length() >= 12) {
 				ZNo = Integer.valueOf(statusZ.split(",")[11]) + 1;
 				lastFiscalDocNo = statusZ.split(",")[9];
+				LVE_ZDate = statusZ.split(",")[5] + statusZ.split(",")[6];
 				invoice = new Query(getCtx(), MInvoice.Table_Name, "LVE_FiscalDocNo=?", get_TrxName())
 				.setParameters(lastFiscalDocNo).setOnlyActiveRecords(true).first();
 			}
-			subTotalTaxBase = salesGeneralFee.add(salesReducedRate).subtract(taxableReturns);
-			subTotalIVA = generalTaxRate.add(reducedRateTax).subtract(subTotalIVACN);
+			subTotalTaxBase = salesGeneralFee.add(salesReducedRate);
+			subTotalIVA = generalTaxRate.add(reducedRateTax);
 			totalZ = subTotalTaxBase.add(subTotalIVA);
+			
+			subTotalTaxBaseCN = salesGeneralFeeCN.add(salesReducedRateCN);
+			subTotalIVACN = generalTaxRateCN.add(reducedRateTaxCN);
+			totalReturnsAmt = subTotalTaxBaseCN.add(subTotalIVACN);
 		}
 	}
 
@@ -133,9 +143,11 @@ public class LVE_CloseZ extends SvrProcess {
 		closeZ.setGeneralTaxRate(formatNum(generalTaxRate));
 		closeZ.setSalesReducedRate(formatNum(salesReducedRate));
 		closeZ.setReducedRateTax(formatNum(reducedRateTax));
+		closeZ.setSalesAdditionalRate(salesAdditionalRate);
+		closeZ.setTaxAdditionalFee(taxAdditionalFee);
 		closeZ.setSubTotalTaxBase(formatNum(subTotalTaxBase));
 		closeZ.setSubTotalIVA(formatNum(subTotalIVA));
-		closeZ.setTotalAmt(totalZ);
+		closeZ.setTotalAmt(formatNum(totalZ));
 		
 		closeZ.setTaxableReturns(formatNum(taxableReturns));
 		closeZ.setSubTotalIVACN(formatNum(subTotalIVACN));
@@ -154,13 +166,26 @@ public class LVE_CloseZ extends SvrProcess {
 		if(invoice != null)
 			closeZ.setC_Invoice_ID(invoice.get_ID());
 		closeZ.saveEx();
-
 	}
 
 	private Timestamp formatDate(String lve_ZDate) {
-		String dateStr = "20" + lve_ZDate.substring(4,6) + "-" + lve_ZDate.substring(2,4) + "-" + lve_ZDate.substring(0,2) + " 00:00:00";
-		Timestamp zDate = Timestamp.valueOf(dateStr);
-		return zDate;
+		log.warning("Date: " + lve_ZDate);
+		System.out.println("Date: " + lve_ZDate);
+		String dateStr = "";
+		if(lve_ZDate.length() < 2) 
+			dateStr = "2017-02-11 00:00:00"; 
+		else {
+		String anio = lve_ZDate.substring(0,2);
+		String month = lve_ZDate.substring(2,4);
+		String day = lve_ZDate.substring(4,6);
+		String hour = lve_ZDate.substring(6,8);
+		String min = lve_ZDate.substring(8,10);
+		String ss = lve_ZDate.substring(10,12);
+		dateStr = "20"+anio+"-"+month+"-"+day+" "+hour+":"+min+":"+ss;
+		}
+		log.warning("DateStr: " + dateStr);
+		Timestamp xDate = Timestamp.valueOf(dateStr);
+		return xDate;
 	}
 	
 	private BigDecimal formatNum(BigDecimal num) {

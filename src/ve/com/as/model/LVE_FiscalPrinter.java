@@ -169,7 +169,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_Zno"), String.valueOf(LVE_Zno));
+				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);
 				invoice.setIsPrinted(true);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
