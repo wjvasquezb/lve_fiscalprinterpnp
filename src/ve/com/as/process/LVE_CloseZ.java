@@ -184,8 +184,8 @@ public class LVE_CloseZ extends SvrProcess {
 		dateStr = "20"+anio+"-"+month+"-"+day+" "+hour+":"+min+":"+ss;
 		}
 		log.warning("DateStr: " + dateStr);
-		Timestamp xDate = Timestamp.valueOf(dateStr);
-		return xDate;
+		Timestamp zDate = Timestamp.valueOf(dateStr);
+		return zDate;
 	}
 	
 	private BigDecimal formatNum(BigDecimal num) {

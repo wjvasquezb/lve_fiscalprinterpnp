@@ -37,6 +37,7 @@ import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
 import org.compiere.model.Query;
 import org.compiere.util.CLogger;
+import org.compiere.util.Env;
 import org.compiere.util.Ini;
 
 import ve.com.as.component.IDLLPnP;
@@ -151,6 +152,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			MInvoice invoice = (MInvoice)po;
 			MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
 			
+			if(invoice.getGrandTotal().compareTo(Env.ZERO) == 0)
+				return "El Documento " + docType.getName() + " No se puede Imprimir porque tiene valor 0";
+			
 			if(!(boolean)docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "IsFiscalDocument")))
 				return null;
 			if(!Ini.isClient())
@@ -158,8 +162,10 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			
 			MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
 			String text = "Ficha: " + partner.getValue() + " - DocNo: " + invoice.getDocumentNo();
-			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0)
+			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
 				partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
+				invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
+			}
 			invoiceInfo = printInvoice(partner, invoice, docType, text);
 			if(invoiceInfo.toUpperCase().contains("ERROR")) {
 				msg = invoiceInfo;
@@ -170,6 +176,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);
+				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
 				invoice.setIsPrinted(true);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
