@@ -78,6 +78,11 @@ public class LVE_CloseZ extends SvrProcess {
 			LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			statusZ = LVE_FiscalPrinter.dllPnP.PFultimo();
 			status = LVE_FiscalPrinter.dllPnP.PFrepz();
+			System.out.println("Se agrega pausa de 2 segundos para enviar otro comando a la Impresora...");
+			try {
+				Thread.sleep(2000);
+			 }catch(InterruptedException e){
+			 }
 			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
 			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
