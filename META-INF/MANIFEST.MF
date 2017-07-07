@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: LVE_FiscalPrinter
 Bundle-SymbolicName: ve.com.as.LVE_FiscalPrinter;singleton:=true
 Bundle-Version: 2.0.0.qualifier
-Bundle-Activator: org.adempiere.plugin.utils.AdempiereActivator
+Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
 Bundle-Vendor: Ing. Victor Suárez - victor.suarez.is@gmail.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.osgi.framework;version="1.3.0"
