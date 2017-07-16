@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: LVE_FiscalPrinter
-Bundle-SymbolicName: LVE_FiscalPrinter;singleton:=true
+Bundle-Name: LVE_FiscalPrinterPnP
+Bundle-SymbolicName: LVE_FiscalPrinterPnP;singleton:=true
 Bundle-Version: 2.1.0.qualifier
 Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
 Bundle-Vendor: Ing. Victor Suárez - victor.suarez.is@gmail.com
