@@ -154,7 +154,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			if(invoice.getGrandTotal().compareTo(Env.ZERO) == 0)
 				return "El Documento " + docType.getName() + " No se puede Imprimir porque tiene valor 0";
 			
-			if(!(boolean)docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "IsFiscalDocument")))
+			if(!(boolean)docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "IsUseFiscalPrinter")))
 				return null;
 			if(!Ini.isClient())
 				return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
