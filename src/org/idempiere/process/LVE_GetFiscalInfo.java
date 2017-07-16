@@ -12,7 +12,7 @@ public class LVE_GetFiscalInfo extends SvrProcess {
 	
 	public int p_LVE_FiscalPrinter_ID = 0;
 	public MLVEFiscalPrinter fiscalPrinter = null;
-	public int port = 0;
+	public String port = "";
 	public String status = "";
 	public String p_TypeStatus = "N";
 	public String fiscalInfo = "";

@@ -27,14 +27,14 @@ import org.compiere.util.KeyNamePair;
 
 /** Generated Model for LVE_FiscalPrinter
  *  @author iDempiere (generated) 
- *  @version Release 3.1 - $Id$ */
+ *  @version Release 4.1 - $Id$ */
 public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Persistent 
 {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20170103L;
+	private static final long serialVersionUID = 20170715L;
 
     /** Standard Constructor */
     public X_LVE_FiscalPrinter (Properties ctx, int LVE_FiscalPrinter_ID, String trxName)
@@ -114,6 +114,23 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 		return (String)get_Value(COLUMNNAME_Brand);
 	}
 
+	/** Set Classname.
+		@param Classname 
+		Java Classname
+	  */
+	public void setClassname (String Classname)
+	{
+		set_Value (COLUMNNAME_Classname, Classname);
+	}
+
+	/** Get Classname.
+		@return Java Classname
+	  */
+	public String getClassname () 
+	{
+		return (String)get_Value(COLUMNNAME_Classname);
+	}
+
 	/** Set DatePrinter.
 		@param DatePrinter DatePrinter	  */
 	public void setDatePrinter (Timestamp DatePrinter)
@@ -145,6 +162,26 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
+	/** Set Host port.
+		@param HostPort 
+		Host Communication Port
+	  */
+	public void setHostPort (int HostPort)
+	{
+		set_Value (COLUMNNAME_HostPort, Integer.valueOf(HostPort));
+	}
+
+	/** Get Host port.
+		@return Host Communication Port
+	  */
+	public int getHostPort () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_HostPort);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
 	/** Set IP Host Fiscal.
 		@param IPHostFiscal IP Host Fiscal	  */
 	public void setIPHostFiscal (String IPHostFiscal)
@@ -171,6 +208,48 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 	public boolean isConnected () 
 	{
 		Object oo = get_Value(COLUMNNAME_IsConnected);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set Remote Host.
+		@param IsRemoteHost Remote Host	  */
+	public void setIsRemoteHost (boolean IsRemoteHost)
+	{
+		set_Value (COLUMNNAME_IsRemoteHost, Boolean.valueOf(IsRemoteHost));
+	}
+
+	/** Get Remote Host.
+		@return Remote Host	  */
+	public boolean isRemoteHost () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsRemoteHost);
+		if (oo != null) 
+		{
+			 if (oo instanceof Boolean) 
+				 return ((Boolean)oo).booleanValue(); 
+			return "Y".equals(oo);
+		}
+		return false;
+	}
+
+	/** Set Use Rules.
+		@param IsUseRules Use Rules	  */
+	public void setIsUseRules (boolean IsUseRules)
+	{
+		set_Value (COLUMNNAME_IsUseRules, Boolean.valueOf(IsUseRules));
+	}
+
+	/** Get Use Rules.
+		@return Use Rules	  */
+	public boolean isUseRules () 
+	{
+		Object oo = get_Value(COLUMNNAME_IsUseRules);
 		if (oo != null) 
 		{
 			 if (oo instanceof Boolean) 
@@ -266,19 +345,16 @@ public class X_LVE_FiscalPrinter extends PO implements I_LVE_FiscalPrinter, I_Pe
 
 	/** Set Fiscal Port.
 		@param LVE_FiscalPort Fiscal Port	  */
-	public void setLVE_FiscalPort (int LVE_FiscalPort)
+	public void setLVE_FiscalPort (String LVE_FiscalPort)
 	{
-		set_Value (COLUMNNAME_LVE_FiscalPort, Integer.valueOf(LVE_FiscalPort));
+		set_Value (COLUMNNAME_LVE_FiscalPort, LVE_FiscalPort);
 	}
 
 	/** Get Fiscal Port.
 		@return Fiscal Port	  */
-	public int getLVE_FiscalPort () 
+	public String getLVE_FiscalPort () 
 	{
-		Integer ii = (Integer)get_Value(COLUMNNAME_LVE_FiscalPort);
-		if (ii == null)
-			 return 0;
-		return ii.intValue();
+		return (String)get_Value(COLUMNNAME_LVE_FiscalPort);
 	}
 
 	/** Set Fiscal Printer.

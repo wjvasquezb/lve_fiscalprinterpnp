@@ -23,7 +23,7 @@ import org.compiere.util.KeyNamePair;
 
 /** Generated Interface for LVE_FiscalPrinter
  *  @author iDempiere (generated) 
- *  @version Release 3.1
+ *  @version Release 4.1
  */
 @SuppressWarnings("all")
 public interface I_LVE_FiscalPrinter 
@@ -32,7 +32,7 @@ public interface I_LVE_FiscalPrinter
     /** TableName=LVE_FiscalPrinter */
     public static final String Table_Name = "LVE_FiscalPrinter";
 
-    /** AD_Table_ID=1000065 */
+    /** AD_Table_ID=1000027 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -84,6 +84,19 @@ public interface I_LVE_FiscalPrinter
 	/** Get Brand	  */
 	public String getBrand();
 
+    /** Column name Classname */
+    public static final String COLUMNNAME_Classname = "Classname";
+
+	/** Set Classname.
+	  * Java Classname
+	  */
+	public void setClassname (String Classname);
+
+	/** Get Classname.
+	  * Java Classname
+	  */
+	public String getClassname();
+
     /** Column name Created */
     public static final String COLUMNNAME_Created = "Created";
 
@@ -122,6 +135,19 @@ public interface I_LVE_FiscalPrinter
 	  */
 	public String getDescription();
 
+    /** Column name HostPort */
+    public static final String COLUMNNAME_HostPort = "HostPort";
+
+	/** Set Host port.
+	  * Host Communication Port
+	  */
+	public void setHostPort (int HostPort);
+
+	/** Get Host port.
+	  * Host Communication Port
+	  */
+	public int getHostPort();
+
     /** Column name IPHostFiscal */
     public static final String COLUMNNAME_IPHostFiscal = "IPHostFiscal";
 
@@ -152,6 +178,24 @@ public interface I_LVE_FiscalPrinter
 
 	/** Get Is Connected	  */
 	public boolean isConnected();
+
+    /** Column name IsRemoteHost */
+    public static final String COLUMNNAME_IsRemoteHost = "IsRemoteHost";
+
+	/** Set Remote Host	  */
+	public void setIsRemoteHost (boolean IsRemoteHost);
+
+	/** Get Remote Host	  */
+	public boolean isRemoteHost();
+
+    /** Column name IsUseRules */
+    public static final String COLUMNNAME_IsUseRules = "IsUseRules";
+
+	/** Set Use Rules	  */
+	public void setIsUseRules (boolean IsUseRules);
+
+	/** Get Use Rules	  */
+	public boolean isUseRules();
 
     /** Column name LastCNFiscalNo */
     public static final String COLUMNNAME_LastCNFiscalNo = "LastCNFiscalNo";
@@ -211,10 +255,10 @@ public interface I_LVE_FiscalPrinter
     public static final String COLUMNNAME_LVE_FiscalPort = "LVE_FiscalPort";
 
 	/** Set Fiscal Port	  */
-	public void setLVE_FiscalPort (int LVE_FiscalPort);
+	public void setLVE_FiscalPort (String LVE_FiscalPort);
 
 	/** Get Fiscal Port	  */
-	public int getLVE_FiscalPort();
+	public String getLVE_FiscalPort();
 
     /** Column name LVE_FiscalPrinter_ID */
     public static final String COLUMNNAME_LVE_FiscalPrinter_ID = "LVE_FiscalPrinter_ID";

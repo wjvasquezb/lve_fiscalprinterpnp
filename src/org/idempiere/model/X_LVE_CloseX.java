@@ -26,14 +26,14 @@ import org.compiere.util.Env;
 
 /** Generated Model for LVE_CloseX
  *  @author iDempiere (generated) 
- *  @version Release 3.1 - $Id$ */
+ *  @version Release 4.1 - $Id$ */
 public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent 
 {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20170208L;
+	private static final long serialVersionUID = 20170715L;
 
     /** Standard Constructor */
     public X_LVE_CloseX (Properties ctx, int LVE_CloseX_ID, String trxName)
@@ -41,11 +41,9 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
       super (ctx, LVE_CloseX_ID, trxName);
       /** if (LVE_CloseX_ID == 0)
         {
+			setLVE_CloseX_ID (0);
 			setLVE_XDate (new Timestamp( System.currentTimeMillis() ));
-// @#Date@
 			setLVE_ZNo (null);
-			setSalesRep_ID (0);
-// @#AD_User_ID@
         } */
     }
 
@@ -140,9 +138,9 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 	public void setC_Invoice_ID (int C_Invoice_ID)
 	{
 		if (C_Invoice_ID < 1) 
-			set_Value (COLUMNNAME_C_Invoice_ID, null);
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, null);
 		else 
-			set_Value (COLUMNNAME_C_Invoice_ID, Integer.valueOf(C_Invoice_ID));
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, Integer.valueOf(C_Invoice_ID));
 	}
 
 	/** Get Invoice.
@@ -289,9 +287,9 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 		return (String)get_Value(COLUMNNAME_LVE_CloseX_UU);
 	}
 
-	public org.idempiere.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException
+	public I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException
     {
-		return (org.idempiere.model.I_LVE_FiscalPrinter)MTable.get(getCtx(), org.idempiere.model.I_LVE_FiscalPrinter.Table_Name)
+		return (I_LVE_FiscalPrinter)MTable.get(getCtx(), I_LVE_FiscalPrinter.Table_Name)
 			.getPO(getLVE_FiscalPrinter_ID(), get_TrxName());	}
 
 	/** Set Fiscal Printer.
@@ -665,7 +663,7 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 	  */
 	public void setTotalAmt (BigDecimal TotalAmt)
 	{
-		set_Value (COLUMNNAME_TotalAmt, TotalAmt);
+		set_ValueNoCheck (COLUMNNAME_TotalAmt, TotalAmt);
 	}
 
 	/** Get Total Amount.

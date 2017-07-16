@@ -23,7 +23,7 @@ import org.compiere.util.KeyNamePair;
 
 /** Generated Interface for LVE_CloseZ
  *  @author iDempiere (generated) 
- *  @version Release 3.1
+ *  @version Release 4.1
  */
 @SuppressWarnings("all")
 public interface I_LVE_CloseZ 
@@ -32,7 +32,7 @@ public interface I_LVE_CloseZ
     /** TableName=LVE_CloseZ */
     public static final String Table_Name = "LVE_CloseZ";
 
-    /** AD_Table_ID=1000067 */
+    /** AD_Table_ID=1000030 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -220,7 +220,7 @@ public interface I_LVE_CloseZ
 	/** Get Fiscal Printer	  */
 	public int getLVE_FiscalPrinter_ID();
 
-	public org.idempiere.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException;
+	public I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException;
 
     /** Column name LVE_ZDate */
     public static final String COLUMNNAME_LVE_ZDate = "LVE_ZDate";

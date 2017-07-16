@@ -45,7 +45,7 @@ import com.sun.jna.Native;
 
 /**
  * 
- * @author Ing. Victor Su�rez - victor.suarez.is@gmail.com - 2016/12
+ * @author Ing. Victor Suarez - victor.suarez.is@gmail.com - 2016/12
  * 	Clase para Imprimir Factura Fiscal antes de completar Documentos.
  *
  */
@@ -194,9 +194,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		String taxID = typePerson + partner.getTaxID();
 		int fiscalPrinterID = (int) docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "LVE_FiscalPrinter_ID")); 
 		MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), fiscalPrinterID, invoice.get_TrxName()); 
-		int port = fiscalPrinter.getLVE_FiscalPort();
+		String port = fiscalPrinter.getLVE_FiscalPort();
 		
-		if(port == 0) 
+		if(port == "" || port == null) 
 			return "ERROR - Debe seleccionar Puerto de Impresora Fiscal";
 		msg = dllPnP.PFabrepuerto(String.valueOf(port));
 		if(!msg.equals("OK"))

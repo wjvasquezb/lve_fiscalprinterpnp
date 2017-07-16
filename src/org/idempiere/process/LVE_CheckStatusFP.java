@@ -14,7 +14,7 @@ public class LVE_CheckStatusFP extends SvrProcess {
 	
 	public int p_LVE_FiscalPrinter_ID = 0;
 	public MLVEFiscalPrinter fiscalPrinter = null;
-	public int port = 0;
+	public String port = "";
 	public String status = "";
 	public String fiscalInfo = "";
 	public String serialFP = "";
@@ -38,7 +38,7 @@ public class LVE_CheckStatusFP extends SvrProcess {
 		if(p_LVE_FiscalPrinter_ID != 0) {
 			fiscalPrinter = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
 			port = fiscalPrinter.getLVE_FiscalPort();
-			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
+			LVE_FiscalPrinter.dllPnP.PFabrepuerto(port);
 			status = LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
 			LVE_FiscalPrinter.dllPnP.PFestatus("T");
