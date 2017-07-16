@@ -14,7 +14,7 @@
  * ComPiere, Inc., 2620 Augustine Dr. #245, Santa Clara, CA 95054, USA        *
  * or via info@compiere.org or http://www.compiere.org/license.html           *
  *****************************************************************************/
-package ve.com.as.model;
+package org.idempiere.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -220,7 +220,7 @@ public interface I_LVE_CloseZ
 	/** Get Fiscal Printer	  */
 	public int getLVE_FiscalPrinter_ID();
 
-	public ve.com.as.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException;
+	public org.idempiere.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException;
 
     /** Column name LVE_ZDate */
     public static final String COLUMNNAME_LVE_ZDate = "LVE_ZDate";

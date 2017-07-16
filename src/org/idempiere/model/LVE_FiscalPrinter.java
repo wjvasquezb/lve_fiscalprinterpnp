@@ -13,9 +13,9 @@
  * For the text or an alternative of this public license, you may reach us    *
  * ComPiere, Inc., 2620 Augustine Dr. #245, Santa Clara, CA 95054, USA        *
  * or via info@compiere.org or http://www.compiere.org/license.html			*          
- * @author Ing. Victor Suárez - victor.suarez.is@gmail.com - 2016/12		*
+ * @author Ing. Victor Suï¿½rez - victor.suarez.is@gmail.com - 2016/12		*
  *****************************************************************************/
-package ve.com.as.model;
+package org.idempiere.model;
 
 import java.io.BufferedReader;
 import java.math.BigDecimal;
@@ -39,14 +39,13 @@ import org.compiere.model.Query;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 import org.compiere.util.Ini;
-
-import ve.com.as.component.IDLLPnP;
+import org.idempiere.component.IDLLPnP;
 
 import com.sun.jna.Native;
 
 /**
  * 
- * @author Ing. Victor Suárez - victor.suarez.is@gmail.com - 2016/12
+ * @author Ing. Victor Suï¿½rez - victor.suarez.is@gmail.com - 2016/12
  * 	Clase para Imprimir Factura Fiscal antes de completar Documentos.
  *
  */
@@ -73,7 +72,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		System.out.println(msg);
 		log.info(msg);
 		if(Ini.isClient()) {
-			msg = "Se carga la librería";
+			msg = "Se carga la libreria pnpdll.dll";
 			System.out.println(msg);
 			log.info(msg);
 			System.load("C:\\adempiere-client\\PnP\\pnpdll.dll");
@@ -122,7 +121,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				description = charge.getName();
 			}
 			if(description == null || description == "")
-				return "Debe agregar una Descripción, un Producto o un Cargo.";
+				return "Debe agregar una Descripcion, un Producto o un Cargo.";
 		}
 		if(po.get_TableName().equals(MInvoiceLine.Table_Name)) {
 			MInvoiceLine invoiceLine = (MInvoiceLine) po;
@@ -136,7 +135,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				description = charge.getName();
 			}
 			if(description == null || description == "")
-				return "Debe agregar una Descripción, un Producto o un Cargo.";
+				return "Debe agregar una Descripcion, un Producto o un Cargo.";
 		}
 		return null;
 	}
@@ -179,7 +178,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
 				invoice.setIsPrinted(true);
 				invoice.saveEx();
-				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impresa correctamente. - " + invoiceInfo;
+				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impreso correctamente. - " + invoiceInfo;
 				log.warning(msg);
 			}
 		}
@@ -246,16 +245,16 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					return "ERROR agregando Lineas - " + msg;
 		}
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
-			/**	Obtener Número de Nota de Crédito Fiscal	**/
+			/**	Obtener Numero de Nota de Credito Fiscal	**/
 			dllPnP.PFestatus("T");
 			creditNoteInfo = dllPnP.PFultimo();
 			if(creditNoteInfo.split(",").length <= 7)
 				creditNoteInfo = "0000,0000,45,00,45,170118,151119,00000000";
-			log.warning("Datos de la Nota de Crédito: " + creditNoteInfo);
+			log.warning("Datos de la Nota de Credito: " + creditNoteInfo);
 			int LVE_creditNoteNoStr = Integer.valueOf(creditNoteInfo.split(",")[7]) + 1;
 			LVE_FiscalDocNo = String.format("%08d", LVE_creditNoteNoStr);
 			
-			log.warning("Imprimiendo Nota de Crédito Fiscal N° " + LVE_FiscalDocNo + " de " + partner.getName() + " - " + partner.getTaxID());
+			log.warning("Imprimiendo Nota de Credito Fiscal # " + LVE_FiscalDocNo + " de " + partner.getName() + " - " + partner.getTaxID());
 			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
 			String date = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"));
 			String hour = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"));
@@ -267,7 +266,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			msg = dllPnP.PFTfiscal(text);
 			if(!msg.equals("OK"))
 				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
-			/**	DATOS DE LA LINEA DE LA NOTA DE CRÉDITO	**/
+			/**	DATOS DE LA LINEA DE LA NOTA DE CREDITO	**/
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {

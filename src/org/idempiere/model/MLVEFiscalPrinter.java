@@ -1,4 +1,4 @@
-package ve.com.as.model;
+package org.idempiere.model;
 
 import java.sql.ResultSet;
 import java.util.Properties;

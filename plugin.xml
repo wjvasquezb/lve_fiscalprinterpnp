@@ -6,7 +6,7 @@
          name="ve.com.as.model.LVE_FiscalPrinter"
          point="org.adempiere.base.ModelValidator">
       <listener
-            class="ve.com.as.model.LVE_FiscalPrinter">
+            class="org.idempiere.model.LVE_FiscalPrinter">
       </listener>
    </extension>
 

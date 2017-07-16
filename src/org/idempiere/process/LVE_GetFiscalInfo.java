@@ -1,12 +1,11 @@
-package ve.com.as.process;
+package org.idempiere.process;
 
 import java.util.logging.Level;
 
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
-
-import ve.com.as.model.LVE_FiscalPrinter;
-import ve.com.as.model.MLVEFiscalPrinter;
+import org.idempiere.model.LVE_FiscalPrinter;
+import org.idempiere.model.MLVEFiscalPrinter;
 
 
 public class LVE_GetFiscalInfo extends SvrProcess {

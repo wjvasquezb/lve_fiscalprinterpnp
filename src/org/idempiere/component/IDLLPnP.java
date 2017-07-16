@@ -1,11 +1,11 @@
-package ve.com.as.component;
+package org.idempiere.component;
 
 import com.sun.jna.win32.StdCallLibrary;
 /**
  * 
  * Interface for to call funtions of DLLPnP
  * IDLLPnP.java
- * @author Ing. Victor Suárez - victor.suarez.is@gmail.com - 01/2017 - Venezuela
+ * @author Ing. Victor Suarez - victor.suarez.is@gmail.com - 01/2017 - Venezuela
  * 
  */
 public interface IDLLPnP extends StdCallLibrary {
@@ -13,45 +13,45 @@ public interface IDLLPnP extends StdCallLibrary {
 	/**	Abrir Puerto Impresora
 	 * @param Port - Puerto Impresora Fiscal
 	 * @return 
-	 * 		- OK: Transmisión/recepción fue correcta
+	 * 		- OK: Transmision/recepcion fue correcta
 	 * 		- ER: Existe un error
 	 * 		- NP: Puerto No Abierto
-	 * 		- TO: Se excedió el tiempo de respuesta esperado del equipo 
+	 * 		- TO: Se excedio el tiempo de respuesta esperado del equipo 
 	 * **/
 	public String PFabrepuerto(String Port);
 	
 	/**	Inicia el Documento Fiscal	
-	 * @param Partner - Razón Social
+	 * @param Partner - Razon Social
 	 * @param RIF
 	 * @return 
-	 * 		- OK: Transmisión/recepción fue correcta
+	 * 		- OK: Transmision/recepcion fue correcta
 	 * 		- ER: Existe un error
 	 * 		- NP: Puerto No Abierto
-	 * 		- TO: Se excedió el tiempo de respuesta esperado del equipo
+	 * 		- TO: Se excedio el tiempo de respuesta esperado del equipo
 	 * **/
 	public String PFabrefiscal(String Partner, String RIF);
 	
 	/**
-	 * Envía un renglón (Item o producto) de la factura.
+	 * Envia un renglon (Item o producto) de la factura.
 	 * @param Description
 	 * @param Qty
 	 * @param Price
 	 * @param IVA
 	 * @return
-	 * 		- OK: Transmisión/recepción fue correcta
+	 * 		- OK: Transmisiï¿½n/recepciï¿½n fue correcta
 	 * 		- ER: Existe un error
 	 * 		- NP: Puerto No Abierto
-	 * 		- TO: Se excedió el tiempo de respuesta esperado del equipo 		
+	 * 		- TO: Se excediï¿½ el tiempo de respuesta esperado del equipo 		
 	 */
 	public String PFrenglon(String Description, String 	Qty, String Price, String IVA);
 	
 	/**
 	 * Genera el final de una facture, imprime el total si este no fue generado por un comando parcial previo y corta el papel.
 	 * @return
-	 * 		- OK: Transmisión/recepción fue correcta
+	 * 		- OK: Transmisiï¿½n/recepciï¿½n fue correcta
 	 * 		- ER: Existe un error
 	 * 		- NP: Puerto No Abierto
-	 * 		- TO: Se excedió el tiempo de respuesta esperado del equipo 
+	 * 		- TO: Se excediï¿½ el tiempo de respuesta esperado del equipo 
 	 */
 	public String PFtotal();
 	

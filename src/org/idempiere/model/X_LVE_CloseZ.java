@@ -15,7 +15,7 @@
  * or via info@compiere.org or http://www.compiere.org/license.html           *
  *****************************************************************************/
 /** Generated Model - DO NOT CHANGE */
-package ve.com.as.model;
+package org.idempiere.model;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -24,33 +24,31 @@ import java.util.Properties;
 import org.compiere.model.*;
 import org.compiere.util.Env;
 
-/** Generated Model for LVE_CloseX
+/** Generated Model for LVE_CloseZ
  *  @author iDempiere (generated) 
  *  @version Release 3.1 - $Id$ */
-public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent 
+public class X_LVE_CloseZ extends PO implements I_LVE_CloseZ, I_Persistent 
 {
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20170208L;
+	private static final long serialVersionUID = 20170207L;
 
     /** Standard Constructor */
-    public X_LVE_CloseX (Properties ctx, int LVE_CloseX_ID, String trxName)
+    public X_LVE_CloseZ (Properties ctx, int LVE_CloseZ_ID, String trxName)
     {
-      super (ctx, LVE_CloseX_ID, trxName);
-      /** if (LVE_CloseX_ID == 0)
+      super (ctx, LVE_CloseZ_ID, trxName);
+      /** if (LVE_CloseZ_ID == 0)
         {
-			setLVE_XDate (new Timestamp( System.currentTimeMillis() ));
-// @#Date@
+			setLVE_ZDate (new Timestamp( System.currentTimeMillis() ));
 			setLVE_ZNo (null);
 			setSalesRep_ID (0);
-// @#AD_User_ID@
         } */
     }
 
     /** Load Constructor */
-    public X_LVE_CloseX (Properties ctx, ResultSet rs, String trxName)
+    public X_LVE_CloseZ (Properties ctx, ResultSet rs, String trxName)
     {
       super (ctx, rs, trxName);
     }
@@ -72,7 +70,7 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 
     public String toString()
     {
-      StringBuffer sb = new StringBuffer ("X_LVE_CloseX[")
+      StringBuffer sb = new StringBuffer ("X_LVE_CloseZ[")
         .append(get_ID()).append("]");
       return sb.toString();
     }
@@ -140,9 +138,9 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 	public void setC_Invoice_ID (int C_Invoice_ID)
 	{
 		if (C_Invoice_ID < 1) 
-			set_Value (COLUMNNAME_C_Invoice_ID, null);
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, null);
 		else 
-			set_Value (COLUMNNAME_C_Invoice_ID, Integer.valueOf(C_Invoice_ID));
+			set_ValueNoCheck (COLUMNNAME_C_Invoice_ID, Integer.valueOf(C_Invoice_ID));
 	}
 
 	/** Get Invoice.
@@ -255,43 +253,43 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 		return (Timestamp)get_Value(COLUMNNAME_LastInvFiscalDate);
 	}
 
-	/** Set Close X.
-		@param LVE_CloseX_ID Close X	  */
-	public void setLVE_CloseX_ID (int LVE_CloseX_ID)
+	/** Set Close Z.
+		@param LVE_CloseZ_ID Close Z	  */
+	public void setLVE_CloseZ_ID (int LVE_CloseZ_ID)
 	{
-		if (LVE_CloseX_ID < 1) 
-			set_ValueNoCheck (COLUMNNAME_LVE_CloseX_ID, null);
+		if (LVE_CloseZ_ID < 1) 
+			set_ValueNoCheck (COLUMNNAME_LVE_CloseZ_ID, null);
 		else 
-			set_ValueNoCheck (COLUMNNAME_LVE_CloseX_ID, Integer.valueOf(LVE_CloseX_ID));
+			set_ValueNoCheck (COLUMNNAME_LVE_CloseZ_ID, Integer.valueOf(LVE_CloseZ_ID));
 	}
 
-	/** Get Close X.
-		@return Close X	  */
-	public int getLVE_CloseX_ID () 
+	/** Get Close Z.
+		@return Close Z	  */
+	public int getLVE_CloseZ_ID () 
 	{
-		Integer ii = (Integer)get_Value(COLUMNNAME_LVE_CloseX_ID);
+		Integer ii = (Integer)get_Value(COLUMNNAME_LVE_CloseZ_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();
 	}
 
-	/** Set LVE_CloseX_UU.
-		@param LVE_CloseX_UU LVE_CloseX_UU	  */
-	public void setLVE_CloseX_UU (String LVE_CloseX_UU)
+	/** Set Close Z UU.
+		@param LVE_CloseZ_UU Close Z UU	  */
+	public void setLVE_CloseZ_UU (String LVE_CloseZ_UU)
 	{
-		set_ValueNoCheck (COLUMNNAME_LVE_CloseX_UU, LVE_CloseX_UU);
+		set_ValueNoCheck (COLUMNNAME_LVE_CloseZ_UU, LVE_CloseZ_UU);
 	}
 
-	/** Get LVE_CloseX_UU.
-		@return LVE_CloseX_UU	  */
-	public String getLVE_CloseX_UU () 
+	/** Get Close Z UU.
+		@return Close Z UU	  */
+	public String getLVE_CloseZ_UU () 
 	{
-		return (String)get_Value(COLUMNNAME_LVE_CloseX_UU);
+		return (String)get_Value(COLUMNNAME_LVE_CloseZ_UU);
 	}
 
-	public ve.com.as.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException
+	public org.idempiere.model.I_LVE_FiscalPrinter getLVE_FiscalPrinter() throws RuntimeException
     {
-		return (ve.com.as.model.I_LVE_FiscalPrinter)MTable.get(getCtx(), ve.com.as.model.I_LVE_FiscalPrinter.Table_Name)
+		return (org.idempiere.model.I_LVE_FiscalPrinter)MTable.get(getCtx(), org.idempiere.model.I_LVE_FiscalPrinter.Table_Name)
 			.getPO(getLVE_FiscalPrinter_ID(), get_TrxName());	}
 
 	/** Set Fiscal Printer.
@@ -314,18 +312,18 @@ public class X_LVE_CloseX extends PO implements I_LVE_CloseX, I_Persistent
 		return ii.intValue();
 	}
 
-	/** Set X Date.
-		@param LVE_XDate X Date	  */
-	public void setLVE_XDate (Timestamp LVE_XDate)
+	/** Set Z Date.
+		@param LVE_ZDate Z Date	  */
+	public void setLVE_ZDate (Timestamp LVE_ZDate)
 	{
-		set_Value (COLUMNNAME_LVE_XDate, LVE_XDate);
+		set_Value (COLUMNNAME_LVE_ZDate, LVE_ZDate);
 	}
 
-	/** Get X Date.
-		@return X Date	  */
-	public Timestamp getLVE_XDate () 
+	/** Get Z Date.
+		@return Z Date	  */
+	public Timestamp getLVE_ZDate () 
 	{
-		return (Timestamp)get_Value(COLUMNNAME_LVE_XDate);
+		return (Timestamp)get_Value(COLUMNNAME_LVE_ZDate);
 	}
 
 	/** Set Z No.

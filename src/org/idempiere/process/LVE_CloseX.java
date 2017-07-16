@@ -1,4 +1,4 @@
-package ve.com.as.process;
+package org.idempiere.process;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -10,10 +10,9 @@ import org.compiere.model.Query;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.SvrProcess;
 import org.compiere.util.Env;
-
-import ve.com.as.model.LVE_FiscalPrinter;
-import ve.com.as.model.MLVECloseX;
-import ve.com.as.model.MLVEFiscalPrinter;
+import org.idempiere.model.LVE_FiscalPrinter;
+import org.idempiere.model.MLVECloseX;
+import org.idempiere.model.MLVEFiscalPrinter;
 
 
 public class LVE_CloseX extends SvrProcess {
@@ -99,7 +98,7 @@ public class LVE_CloseX extends SvrProcess {
 	private void setCloseXInfo() {
 		fiscalInfoSplit = fiscalInfo.split(",");
 		if(fiscalInfoSplit.length < 14) {
-			msg = "No se puede obtener información compoleta de Cierre X - " + fiscalInfo;
+			msg = "No se puede obtener informacion compoleta de Cierre X - " + fiscalInfo;
 			log.warning(msg);
 		} else {
 			salesRep = new MUser(getCtx(), Integer.valueOf(Env.getContext(getCtx(), "#AD_User_ID")), get_TrxName());

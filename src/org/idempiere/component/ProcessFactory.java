@@ -1,13 +1,12 @@
-package ve.com.as.component;
+package org.idempiere.component;
 
 import org.adempiere.base.IProcessFactory;
 import org.compiere.process.ProcessCall;
-
-import ve.com.as.process.LVE_CloseX;
-import ve.com.as.process.LVE_CloseZ;
-import ve.com.as.process.LVE_PrintInvoice;
-import ve.com.as.process.LVE_GetFiscalInfo;
-import ve.com.as.process.LVE_CheckStatusFP;;
+import org.idempiere.process.LVE_CheckStatusFP;
+import org.idempiere.process.LVE_CloseX;
+import org.idempiere.process.LVE_CloseZ;
+import org.idempiere.process.LVE_GetFiscalInfo;
+import org.idempiere.process.LVE_PrintInvoice;;
 
 public class ProcessFactory implements IProcessFactory {
 	

@@ -1,4 +1,4 @@
-package ve.com.as.process;
+package org.idempiere.process;
 
 import java.util.logging.Level;
 
