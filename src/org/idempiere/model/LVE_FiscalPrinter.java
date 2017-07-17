@@ -160,11 +160,11 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
 			
 			MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
-			String text = "Ficha: " + partner.getValue() + " - DocNo: " + invoice.getDocumentNo();
-			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
-				partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
-				invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
-			}
+			String text = "Numero de Documento: " + invoice.getDocumentNo();
+//			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
+//				partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
+//				invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
+//			}
 			invoiceInfo = printInvoice(partner, invoice, docType, text);
 			if(invoiceInfo.toUpperCase().contains("ERROR")) {
 				msg = invoiceInfo;
@@ -175,7 +175,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
+//				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
 				invoice.setIsPrinted(true);
 				invoice.saveEx();
 				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impreso correctamente. - " + invoiceInfo;
