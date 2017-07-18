@@ -68,15 +68,22 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	static CLogger log = CLogger.getCLogger(LVE_FiscalPrinter.class);
 	
 	public LVE_FiscalPrinter() {
-		msg = "Imprimir Factura Fiscal: LVE_FiscalPrinter()";
+		msg = "Plugin para Impresoras Fiscales PnP: LVE_FiscalPrinterPnP";
 		System.out.println(msg);
 		log.info(msg);
 		if(Ini.isClient()) {
-			msg = "Se carga la libreria pnpdll.dll";
-			System.out.println(msg);
-			log.info(msg);
-			System.load("C:\\adempiere-client\\PnP\\pnpdll.dll");
-			dllPnP = (IDLLPnP)Native.loadLibrary("pnpdll", IDLLPnP.class);
+			String oS = System.getProperty("os.name");
+			if(oS.toLowerCase().indexOf("win") >= 0) {
+				msg = "Se carga la libreria pnpdll.dll";
+				System.out.println(msg);
+				log.info(msg);
+				System.load("C:\\adempiere-client\\PnP\\pnpdll.dll");
+				dllPnP = (IDLLPnP)Native.loadLibrary("pnpdll", IDLLPnP.class);
+			} else {
+				msg = "No se puede cargar la libreria pnpdll.dll porque el Sistema Operativo es: " + oS;
+				System.out.println(msg);
+				log.warning(msg);
+			}
 		}
 	}
 
@@ -172,6 +179,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return msg;
 			} else  {
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
+				invoice.setDocumentNo(LVE_FiscalDocNo);;
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
 				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);

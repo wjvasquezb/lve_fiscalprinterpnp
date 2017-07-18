@@ -8,8 +8,10 @@ public class ModelFactory implements IModelValidatorFactory {
 
 	@Override
 	public ModelValidator newModelValidatorInstance(String className) {
-		if(className.equalsIgnoreCase("org.idempiere.model.LVE_FiscalPrinter"))
+		if(className.equalsIgnoreCase("org.idempiere.model.LVE_FiscalPrinter")) {
+			System.out.println("Carga de org.idempiere.model.LVE_FiscalPrinter");
 			return new LVE_FiscalPrinter();
+		}
 		
 		return null;
 	}
