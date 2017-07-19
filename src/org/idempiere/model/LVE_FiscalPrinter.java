@@ -193,13 +193,19 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		return null;
 	}
 
-	public static String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType, String text) {
-		PO taxIdType = new Query(partner.getCtx(), MTable.get(partner.getCtx(), "LCO_TaxIdType"), "LCO_TaxIdType_ID =? ", partner.get_TrxName()).setParameters(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID"))).first();			
-		String typePerson = taxIdType.get_Value("Name").toString();
-		
+	public static String printInvoice(MBPartner partner, MInvoice invoice, MDocType docType, String text) {		
 		/**	DATOS DE LA FACTURA FISCAL	**/
 		String name = cleanName(partner.getName().toUpperCase());
-		String taxID = typePerson + partner.getTaxID();
+		String taxID = partner.getTaxID();
+		if(!taxID.substring(0, 1).matches("[VEJG]")) {
+			if(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID") != 0) {
+				if(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID")) != null) {
+					PO taxIdType = new Query(partner.getCtx(), MTable.get(partner.getCtx(), "LCO_TaxIdType"), "LCO_TaxIdType_ID =? ", partner.get_TrxName()).setParameters(partner.get_ValueOfColumn(MColumn.getColumn_ID(MBPartner.Table_Name, "LCO_TaxIdType_ID"))).first();
+					String typePerson = taxIdType.get_Value("Name").toString();
+					taxID = typePerson + taxID;
+				}
+			}
+		}
 		int fiscalPrinterID = (int) docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "LVE_FiscalPrinter_ID")); 
 		MLVEFiscalPrinter fiscalPrinter = new MLVEFiscalPrinter(invoice.getCtx(), fiscalPrinterID, invoice.get_TrxName()); 
 		String port = fiscalPrinter.getLVE_FiscalPort();
@@ -229,9 +235,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			msg = dllPnP.PFabrefiscal(name, taxID);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
-			msg = dllPnP.PFTfiscal(text);
-			if(!msg.equals("OK"))
-				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA FACTURA FISCAL	**/
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
@@ -348,4 +351,5 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		 }	
 	return name.trim();
 	}
+
 }

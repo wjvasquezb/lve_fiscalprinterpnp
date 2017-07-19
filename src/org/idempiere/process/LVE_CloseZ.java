@@ -77,13 +77,27 @@ public class LVE_CloseZ extends SvrProcess {
 			LVE_FiscalPrinter.dllPnP.PFestatus("N");
 			statusZ = LVE_FiscalPrinter.dllPnP.PFultimo();
 			status = LVE_FiscalPrinter.dllPnP.PFrepz();
-			System.out.println("Se agrega pausa de 2 segundos para enviar otro comando a la Impresora...");
+			msg = "Se agrega pausa de 5 segundos para cerrar el puerto...";
+			System.out.println(msg);
+			log.warning(msg);
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(5000);
 			 }catch(InterruptedException e){
 			 }
+			
+			log.warning("Status N -> " + LVE_FiscalPrinter.dllPnP.PFestatus("N"));
+			log.warning("Status E -> " + LVE_FiscalPrinter.dllPnP.PFestatus("E"));
+			log.warning("Status A -> " + LVE_FiscalPrinter.dllPnP.PFestatus("A"));
+			log.warning("Status B -> " + LVE_FiscalPrinter.dllPnP.PFestatus("B"));
+			log.warning("Status C -> " + LVE_FiscalPrinter.dllPnP.PFestatus("C"));
+			log.warning("Status D -> " + LVE_FiscalPrinter.dllPnP.PFestatus("D"));
+			log.warning("Status R -> " + LVE_FiscalPrinter.dllPnP.PFestatus("R"));
+			log.warning("Enviando comando PFultimo, para obtener info de Z");
 			fiscalInfo = LVE_FiscalPrinter.dllPnP.PFultimo();
+			log.warning("Resultado comando PFultimo: " + fiscalInfo);
+			
 			LVE_FiscalPrinter.dllPnP.PFcierrapuerto();
+			
 			fiscalPrinter.setLVE_FPStatus(fiscalInfo);
 			fiscalPrinter.setLVE_FPError(fiscalInfo);
 			if("OK".equals(status)) {
