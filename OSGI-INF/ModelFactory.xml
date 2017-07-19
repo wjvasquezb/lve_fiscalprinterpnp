@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ve.com.as.LVEFiscalPrinterModelFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="LVEFiscalPrinterModelFactory">
    <implementation class="org.idempiere.component.ModelFactory"/>
    <property name="service.ranking" type="Integer" valu100="1" value="100"/>
 </scr:component>
