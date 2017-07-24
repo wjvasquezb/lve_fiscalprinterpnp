@@ -57,7 +57,7 @@ public class LVE_CloseZ extends SvrProcess {
 	
 	@Override
 	protected void prepare() {
-		System.out.println("Prepare Check Status Printer");
+		System.out.println("Prepare Close X PNP");
 		
 		ProcessInfoParameter[] para = getParameter();
 		for (int i = 0; i < para.length; i++) {

@@ -22,7 +22,7 @@ public class LVE_CheckStatusFP extends SvrProcess {
 	
 	@Override
 	protected void prepare() {
-		System.out.println("Prepare Check Status Printer");
+		System.out.println("Prepare Check Status Printer PNP");
 		
 		ProcessInfoParameter[] para = getParameter();
 		for (int i = 0; i < para.length; i++) {

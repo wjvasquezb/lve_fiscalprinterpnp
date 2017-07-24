@@ -58,7 +58,7 @@ public class LVE_CloseX extends SvrProcess {
 	
 	@Override
 	protected void prepare() {
-		System.out.println("Prepare Check Status Printer");
+		System.out.println("Prepare Close X PNP");
 		
 		ProcessInfoParameter[] para = getParameter();
 		for (int i = 0; i < para.length; i++) {
@@ -73,6 +73,8 @@ public class LVE_CloseX extends SvrProcess {
 	protected String doIt() throws Exception {	
 		if(p_LVE_FiscalPrinter_ID != 0) {
 			fiscalPrinter = new MLVEFiscalPrinter(getCtx(), p_LVE_FiscalPrinter_ID, get_TrxName());
+			if(!fiscalPrinter.getValue().toUpperCase().contains("PNP"))
+				return "";
 			port = fiscalPrinter.getLVE_FiscalPort();
 			LVE_FiscalPrinter.dllPnP.PFabrepuerto(String.valueOf(port));
 			LVE_FiscalPrinter.dllPnP.PFestatus("N");
