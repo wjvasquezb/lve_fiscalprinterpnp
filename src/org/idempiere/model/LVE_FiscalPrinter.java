@@ -20,18 +20,23 @@ package org.idempiere.model;
 import java.io.BufferedReader;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
 
 import org.compiere.model.MBPartner;
+import org.compiere.model.MBPartnerLocation;
 import org.compiere.model.MCharge;
 import org.compiere.model.MClient;
 import org.compiere.model.MColumn;
 import org.compiere.model.MDocType;
 import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
+import org.compiere.model.MLocation;
 import org.compiere.model.MOrderLine;
+import org.compiere.model.MPaymentTerm;
 import org.compiere.model.MProduct;
 import org.compiere.model.MTable;
 import org.compiere.model.MTax;
+import org.compiere.model.MUser;
 import org.compiere.model.ModelValidationEngine;
 import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
@@ -274,9 +279,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffectedNo, fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
-			msg = dllPnP.PFTfiscal(text);
-			if(!msg.equals("OK"))
-				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
+//			msg = dllPnP.PFTfiscal(text);
+//			if(!msg.equals("OK"))
+//				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA NOTA DE CREDITO	**/
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
@@ -302,11 +307,42 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
-		
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Texto al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFcierrapuerto();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
 		return invoiceInfo;
+	}
+	
+	private static String getText(MBPartner partner, MInvoice invoice, MDocType docType) {
+		MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
+		MLocation location = new MLocation(invoice.getCtx(), bpLocation.getC_Location_ID(), invoice.get_TrxName());
+		String docNo = "TR:"+LVE_FiscalDocNo;
+		MUser user = new MUser(invoice.getCtx(), invoice.getSalesRep_ID(), invoice.get_TrxName());
+		String salesRep = "Vd:" + user.getName();
+		String payTerm = "CP:CONTADO";
+		if(invoice.getC_PaymentTerm_ID() > 0) {
+			MPaymentTerm paymentTerm = new MPaymentTerm(invoice.getCtx(), invoice.getC_PaymentTerm_ID(), invoice.get_TrxName());
+			payTerm = "CP:"+paymentTerm.getName();
+		}
+		String address = "DIR:" + location.getAddress1() + ", " + location.getAddress2() + ",\n"
+					+ 	location.getAddress3() + ", " + location.getAddress4() + ",\n"
+					+	location.getCity() + " - " + location.getRegionName() + "TLF: " + bpLocation.getPhone() + " - " + bpLocation.getPhone2();
+		String invoiceAffected = "";
+		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
+			MInvoice affected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
+			invoiceAffected = "Afecta Fc:" + affected.getDocumentNo();
+		}
+		String bpCode = "Cliente:" + partner.getValue();
+		String name = partner.getName();
+		String text = docNo + " " + salesRep + " " + payTerm + "\n"
+				+ address + "\n"
+				+ invoiceAffected + " " + bpCode + "\n"
+				+ name;
+		log.log(Level.INFO, text);
+		return text;
 	}
 
 	private static String formatDate(String fiscalDate) {
