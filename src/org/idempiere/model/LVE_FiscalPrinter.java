@@ -241,7 +241,15 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA FACTURA FISCAL	**/
+			//	Variables for group product+price info
+			String OldDescription = "";
+			String OldPrice = "";
+			BigDecimal cumulatedQty = BigDecimal.ZERO;
+			int lines = 0;
+			int totallines = invoice.getLines().length;
+			//	End definition variables
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
+				lines++;
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
 					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
@@ -251,14 +259,33 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
 					description = charge.getName();
 				}
-				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
 				String price = formatPrice(invoiceLine.getPriceEntered());
+				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
 				String iva = formatIVA(tax.getRate());
-				String qty = formatQty(invoiceLine.getQtyEntered());
-				
-				msg = dllPnP.PFrenglon(description, qty, price, iva);
-				if(!msg.equals("OK"))
-					return "ERROR agregando Lineas - " + msg;
+				//	Added by Jorge Colmenarez 2017-09-03 21:46
+				//	Group product when use attribute set instance and in the invoice have a product with same price but distinct ASI
+				if((OldDescription!=description && OldDescription != "") && (OldPrice!=price && OldPrice!="")){
+					String qty = formatQty(cumulatedQty);
+					//	Send Info to Fiscal Printer
+					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					if(!msg.equals("OK"))
+						return "ERROR agregando Lineas - " + msg;
+					//	Reset cumulated qty
+					cumulatedQty = BigDecimal.ZERO;
+				}
+				//	Cumulated Qty Entered from Invoice Line
+				cumulatedQty = cumulatedQty.add(invoiceLine.getQtyEntered());
+				//	For send to printer the last line
+				if(lines==totallines){
+					String qty = formatQty(cumulatedQty);
+					//	Send Info to Fiscal Printer
+					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					if(!msg.equals("OK"))
+						return "ERROR agregando Lineas - " + msg;
+					//	Reset cumulated qty
+					cumulatedQty = BigDecimal.ZERO;
+				}
+				//	End Jorge Colmenarez
 		}
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
 			/**	Obtener Numero de Nota de Credito Fiscal	**/
@@ -283,6 +310,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 //			if(!msg.equals("OK"))
 //				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA NOTA DE CREDITO	**/
+			//	Variables for group product+price info
+			String OldDescription = "";
+			String OldPrice = "";
+			BigDecimal cumulatedQty = BigDecimal.ZERO;
+			int lines = 0;
+			int totallines = invoice.getLines().length;
+			//	End definition variables
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
@@ -296,11 +330,30 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
 				String price = formatPrice(invoiceLine.getPriceEntered());
 				String iva = formatIVA(tax.getRate());
-				String qty = formatQty(invoiceLine.getQtyEntered());
-				
-				msg = dllPnP.PFrenglon(description, qty, price, iva);
-				if(!msg.equals("OK"))
-					return "ERROR agregando Lineas - " + msg;
+				//	Added by Jorge Colmenarez 2017-09-03 21:46
+				//	Group product when use attribute set instance and in the invoice have a product with same price but distinct ASI
+				if((OldDescription!=description && OldDescription != "") && (OldPrice!=price && OldPrice!="")){
+					String qty = formatQty(cumulatedQty);
+					//	Send Info to Fiscal Printer
+					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					if(!msg.equals("OK"))
+						return "ERROR agregando Lineas - " + msg;
+					//	Reset cumulated qty
+					cumulatedQty = BigDecimal.ZERO;
+				}
+				//	Cumulated Qty Entered from Invoice Line
+				cumulatedQty = cumulatedQty.add(invoiceLine.getQtyEntered());
+				//	For send to printer the last line
+				if(lines==totallines){
+					String qty = formatQty(cumulatedQty);
+					//	Send Info to Fiscal Printer
+					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					if(!msg.equals("OK"))
+						return "ERROR agregando Lineas - " + msg;
+					//	Reset cumulated qty
+					cumulatedQty = BigDecimal.ZERO;
+				}
+				//	End Jorge Colmenarez
 		}
 		}
 		
