@@ -84,6 +84,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				log.info(msg);
 				System.load("C:\\adempiere-client\\PnP\\pnpdll.dll");
 				dllPnP = (IDLLPnP)Native.loadLibrary("pnpdll", IDLLPnP.class);
+				System.out.println("Libreria Cargada: "+dllPnP);
 			} else {
 				msg = "No se puede cargar la libreria pnpdll.dll porque el Sistema Operativo es: " + oS;
 				System.out.println(msg);
@@ -235,21 +236,23 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		}
 		int LVE_FiscalDocNoStr = Integer.valueOf(status.split(",")[9]) + 1;
 		LVE_FiscalDocNo = String.format("%08d",LVE_FiscalDocNoStr);
+		
+
+		//	Variables for group product+price info
+		String OldDescPrice = "-1";
+		String OldDescription = "-1";
+		String OldQty = "-1";
+		String OldPrice = "-1";
+		String OldIVA = "-1";
+		BigDecimal cumulatedQty = BigDecimal.ZERO;
+		
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARInvoice)) {
 			log.warning("Imprimiendo Factura Fiscal de " + partner.getName() + " - " + partner.getTaxID());
 			msg = dllPnP.PFabrefiscal(name, taxID);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA FACTURA FISCAL	**/
-			//	Variables for group product+price info
-			String OldDescription = "";
-			String OldPrice = "";
-			BigDecimal cumulatedQty = BigDecimal.ZERO;
-			int lines = 0;
-			int totallines = invoice.getLines().length;
-			//	End definition variables
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
-				lines++;
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
 					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
@@ -259,15 +262,20 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
 					description = charge.getName();
 				}
+				//	Support for concatenate description into product or charge if it's not null
+				if(invoiceLine.getDescription()!=null){
+					description = description+" "+invoiceLine.getDescription();
+				}
 				String price = formatPrice(invoiceLine.getPriceEntered());
 				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
 				String iva = formatIVA(tax.getRate());
 				//	Added by Jorge Colmenarez 2017-09-03 21:46
 				//	Group product when use attribute set instance and in the invoice have a product with same price but distinct ASI
-				if((OldDescription!=description && OldDescription != "") && (OldPrice!=price && OldPrice!="")){
+				String CurrentDescPrice=(description+"_"+price).trim();
+				if(!OldDescPrice.trim().equals(CurrentDescPrice.trim()) && !OldDescPrice.equals("-1")){
 					String qty = formatQty(cumulatedQty);
 					//	Send Info to Fiscal Printer
-					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					msg = dllPnP.PFrenglon(OldDescription, qty, OldPrice, OldIVA);
 					if(!msg.equals("OK"))
 						return "ERROR agregando Lineas - " + msg;
 					//	Reset cumulated qty
@@ -275,18 +283,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				}
 				//	Cumulated Qty Entered from Invoice Line
 				cumulatedQty = cumulatedQty.add(invoiceLine.getQtyEntered());
-				//	For send to printer the last line
-				if(lines==totallines){
-					String qty = formatQty(cumulatedQty);
-					//	Send Info to Fiscal Printer
-					msg = dllPnP.PFrenglon(description, qty, price, iva);
-					if(!msg.equals("OK"))
-						return "ERROR agregando Lineas - " + msg;
-					//	Reset cumulated qty
-					cumulatedQty = BigDecimal.ZERO;
-				}
+				OldDescPrice=(description+"_"+price).trim();
+				OldDescription = description;
+				OldPrice = price;
+				OldQty = formatQty(cumulatedQty);
+				OldIVA = iva;
 				//	End Jorge Colmenarez
-		}
+			}
 		} else if (docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
 			/**	Obtener Numero de Nota de Credito Fiscal	**/
 			dllPnP.PFestatus("T");
@@ -301,8 +304,13 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			MInvoice invoiceAffected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
 			String date = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"));
 			String hour = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"));
-			String invoiceAffectedNo = (String) invoiceAffected.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"));
-			
+			//	Support for search DocNo invoice affected from LVE_FiscalDocNo or DocumentNo 
+			String invoiceAffectedNo;
+			if(invoiceAffected.get_ValueAsString("LVE_FiscalDocNo")!="")
+				invoiceAffectedNo = invoiceAffected.get_ValueAsString("LVE_FiscalDocNo");
+			else
+				invoiceAffectedNo = invoiceAffected.getDocumentNo();
+			//	End Support			
 			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffectedNo, fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
@@ -310,13 +318,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 //			if(!msg.equals("OK"))
 //				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA NOTA DE CREDITO	**/
-			//	Variables for group product+price info
-			String OldDescription = "";
-			String OldPrice = "";
-			BigDecimal cumulatedQty = BigDecimal.ZERO;
-			int lines = 0;
-			int totallines = invoice.getLines().length;
-			//	End definition variables
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
@@ -327,15 +328,20 @@ public class LVE_FiscalPrinter implements ModelValidator {
 					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
 					description = charge.getName();
 				}
+				//	Support for concatenate description into product or charge if it's not null
+				if(invoiceLine.getDescription()!=null){
+					description = description+" "+invoiceLine.getDescription();
+				}
 				MTax tax = new MTax(invoiceLine.getCtx(), invoiceLine.getC_Tax_ID(), invoice.get_TrxName());
 				String price = formatPrice(invoiceLine.getPriceEntered());
 				String iva = formatIVA(tax.getRate());
 				//	Added by Jorge Colmenarez 2017-09-03 21:46
 				//	Group product when use attribute set instance and in the invoice have a product with same price but distinct ASI
-				if((OldDescription!=description && OldDescription != "") && (OldPrice!=price && OldPrice!="")){
+				String CurrentDescPrice=(description+"_"+price).trim();
+				if(!OldDescPrice.trim().equals(CurrentDescPrice.trim()) && !OldDescPrice.equals("-1")){
 					String qty = formatQty(cumulatedQty);
 					//	Send Info to Fiscal Printer
-					msg = dllPnP.PFrenglon(description, qty, price, iva);
+					msg = dllPnP.PFrenglon(OldDescription, qty, OldPrice, OldIVA);
 					if(!msg.equals("OK"))
 						return "ERROR agregando Lineas - " + msg;
 					//	Reset cumulated qty
@@ -343,33 +349,54 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				}
 				//	Cumulated Qty Entered from Invoice Line
 				cumulatedQty = cumulatedQty.add(invoiceLine.getQtyEntered());
-				//	For send to printer the last line
-				if(lines==totallines){
-					String qty = formatQty(cumulatedQty);
-					//	Send Info to Fiscal Printer
-					msg = dllPnP.PFrenglon(description, qty, price, iva);
-					if(!msg.equals("OK"))
-						return "ERROR agregando Lineas - " + msg;
-					//	Reset cumulated qty
-					cumulatedQty = BigDecimal.ZERO;
-				}
+				OldDescPrice=(description+"_"+price).trim();
+				OldDescription = description;
+				OldPrice = price;
+				OldQty = formatQty(cumulatedQty);
+				OldIVA = iva;
 				//	End Jorge Colmenarez
-		}
+			}
 		}
 		
+		//	For send to printer the last line
+		//	Send Info to Fiscal Printer
+		msg = dllPnP.PFrenglon(OldDescription, OldQty, OldPrice, OldIVA);
+		if(!msg.equals("OK"))
+			return "ERROR agregando Lineas - " + msg;
+		
+		
+		msg = dllPnP.PFparcial();
+		if(!msg.equals("OK"))
+			return "ERROR generando cierre parcial del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 1));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 1 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 2));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 2 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 3));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 3 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 4));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 4 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 5));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 5 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 6));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 6 al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
-		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType));
-		if(!msg.equals("OK"))
-			return "ERROR agregando Texto al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFcierrapuerto();
 		if(!msg.equals("OK"))
-			return "ERROR agregando Total al Documento Fiscal - " + msg;
+			return "ERROR cerrando Puerto Impresora - " + msg;
 		return invoiceInfo;
 	}
 	
-	private static String getText(MBPartner partner, MInvoice invoice, MDocType docType) {
+	private static String getText(MBPartner partner, MInvoice invoice, MDocType docType, int line) {
+		String text;
 		MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
 		MLocation location = new MLocation(invoice.getCtx(), bpLocation.getC_Location_ID(), invoice.get_TrxName());
 		String docNo = "TR:"+LVE_FiscalDocNo;
@@ -380,20 +407,42 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			MPaymentTerm paymentTerm = new MPaymentTerm(invoice.getCtx(), invoice.getC_PaymentTerm_ID(), invoice.get_TrxName());
 			payTerm = "CP:"+paymentTerm.getName();
 		}
-		String address = "DIR:" + location.getAddress1() + ", " + location.getAddress2() + ",\n"
-					+ 	location.getAddress3() + ", " + location.getAddress4() + ",\n"
-					+	location.getCity() + " - " + location.getRegionName() + "TLF: " + bpLocation.getPhone() + " - " + bpLocation.getPhone2();
+		String address = "DIR: " + location.getAddress1() + ", " + (location.getAddress2() == null ? "" : location.getAddress2()+", ") + "\n"
+					+ 	(location.getAddress3() == null ? "" : location.getAddress3()+", ") + (location.getAddress4() == null ? "" : location.getAddress4()+", ");
+		String city = location.getCity() + ((location.getRegionName()==null || location.getRegionName()=="") ? "" : " - "+location.getRegionName());
+		String phone = "TLF: " + (bpLocation.getPhone()==null ? "" : bpLocation.getPhone()) + (bpLocation.getPhone2()==null ? "" : " - " + bpLocation.getPhone2()); 
 		String invoiceAffected = "";
 		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
 			MInvoice affected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
-			invoiceAffected = "Afecta Fc:" + affected.getDocumentNo();
+			invoiceAffected = "Afecta Fc: " + affected.getDocumentNo()+" ";
 		}
-		String bpCode = "Cliente:" + partner.getValue();
+		String bpCode = "Cliente: " + partner.getValue();
 		String name = partner.getName();
+		if(line == 1){
+			text = docNo + " " + salesRep + " " + payTerm;
+		}
+		else if(line == 2){
+			text = address.substring(0, address.length()-2);
+		}
+		else if(line == 3){
+			text = city;
+		}
+		else if(line == 4){
+			text = phone;
+		}
+		else if(line == 5){
+			text = (invoiceAffected!="" ? invoiceAffected : "") + bpCode;
+		}
+		else{
+			text = name;
+		}
+		/*
+		 * Se comenta para imprimir el texto por cortes
 		String text = docNo + " " + salesRep + " " + payTerm + "\n"
 				+ address + "\n"
 				+ invoiceAffected + " " + bpCode + "\n"
 				+ name;
+		*/
 		log.log(Level.INFO, text);
 		return text;
 	}
@@ -438,7 +487,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				 name+= value.charAt(i);
 			 }		  		 
 		 }	
-	return name.trim();
+	//	Support for Truncate string to 80 characters
+	//	modified by Jorge Colmenarez, 2017-09-05 16:00, jcolmenarez@frontuari.com, Frontuari, C.A.
+	return name.trim().substring(0, 80);
 	}
 
 }

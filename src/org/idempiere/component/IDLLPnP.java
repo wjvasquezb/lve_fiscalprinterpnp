@@ -74,4 +74,6 @@ public interface IDLLPnP extends StdCallLibrary {
 	public String PFultimo();
 	
 	public String PFcierrapuerto();
+	
+	public String PFparcial();
 }
