@@ -52,6 +52,8 @@ import com.sun.jna.Native;
  * 
  * @author Ing. Victor Suarez - victor.suarez.is@gmail.com - 2016/12
  * 	Clase para Imprimir Factura Fiscal antes de completar Documentos.
+ * @collaborator Ing. Jorge Colmenarez - jcolmenarez@frontuari.com - 2017/09 - Frontuari, C.A.
+ * 	Support for Group product + price by distinct ASI, Fixed bug to print page footer info, Support for reverse documents
  *
  */
 
@@ -162,38 +164,41 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				return null;			
 			
 			MInvoice invoice = (MInvoice)po;
-			MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
-			
-			if(invoice.getGrandTotal().compareTo(Env.ZERO) == 0)
-				return "El Documento " + docType.getName() + " No se puede Imprimir porque tiene valor 0";
-			
-			if(!(boolean)docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "IsUseFiscalPrinter")))
-				return null;
-			if(!Ini.isClient())
-				return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
-			
-			MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
-			String text = "Numero de Documento: " + invoice.getDocumentNo();
-//			if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
-//				partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
-//				invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
-//			}
-			invoiceInfo = printInvoice(partner, invoice, docType, text);
-			if(invoiceInfo.toUpperCase().contains("ERROR")) {
-				msg = invoiceInfo;
-				log.warning(msg);
-				return msg;
-			} else  {
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
-				invoice.setDocumentNo(LVE_FiscalDocNo);;
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
-				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);
-//				invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
-				invoice.setIsPrinted(true);
-				invoice.saveEx();
-				msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impreso correctamente. - " + invoiceInfo;
-				log.warning(msg);
+			//	Print only when complete a document not reversal, added by Jorge Colmenarez, 2017-09-06 9:37
+			if(invoice.getReversal_ID() == 0){
+				MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
+				
+				if(invoice.getGrandTotal().compareTo(Env.ZERO) == 0)
+					return "El Documento " + docType.getName() + " No se puede Imprimir porque tiene valor 0";
+				
+				if(!(boolean)docType.get_ValueOfColumn(MColumn.getColumn_ID(MDocType.Table_Name, "IsUseFiscalPrinter")))
+					return null;
+				if(!Ini.isClient())
+					return "No puede Completar Documento Fiscal desde el Cliente Web, debe usar el Cliente Swing";
+				
+				MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
+				String text = "Numero de Documento: " + invoice.getDocumentNo();
+//				if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
+//					partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
+//					invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
+//				}
+				invoiceInfo = printInvoice(partner, invoice, docType, text);
+				if(invoiceInfo.toUpperCase().contains("ERROR")) {
+					msg = invoiceInfo;
+					log.warning(msg);
+					return msg;
+				} else  {
+					invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDocNo"), LVE_FiscalDocNo);
+					invoice.setDocumentNo(LVE_FiscalDocNo);;
+					invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalDate"), LVE_FiscalDate);
+					invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_FiscalHour"), LVE_FiscalHour);
+					invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_ZNo"), LVE_Zno);
+//					invoice.set_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "Bill_BPartner_ID"), partner.getC_BPartner_ID());
+					invoice.setIsPrinted(true);
+					invoice.saveEx();
+					msg = "Documento Fiscal Nro: " + LVE_FiscalDocNo + " - Impreso correctamente. - " + invoiceInfo;
+					log.warning(msg);
+				}
 			}
 		}
 		return null;
