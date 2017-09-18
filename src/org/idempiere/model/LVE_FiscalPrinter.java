@@ -19,6 +19,8 @@ package org.idempiere.model;
 
 import java.io.BufferedReader;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 
@@ -42,6 +44,7 @@ import org.compiere.model.ModelValidator;
 import org.compiere.model.PO;
 import org.compiere.model.Query;
 import org.compiere.util.CLogger;
+import org.compiere.util.DB;
 import org.compiere.util.Env;
 import org.compiere.util.Ini;
 import org.idempiere.component.IDLLPnP;
@@ -391,6 +394,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 6));
 		if(!msg.equals("OK"))
 			return "ERROR agregando Linea 6 al pie del Documento Fiscal - " + msg;
+		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 7));
+		if(!msg.equals("OK"))
+			return "ERROR agregando Linea 7 al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
@@ -412,6 +418,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			MPaymentTerm paymentTerm = new MPaymentTerm(invoice.getCtx(), invoice.getC_PaymentTerm_ID(), invoice.get_TrxName());
 			payTerm = "CP:"+paymentTerm.getName();
 		}
+		//	Get Tender Type, Added by Jorge Colmenarez 2017-09-16 11:10
+		String tendertype = getTenderType(invoice.getC_Invoice_ID());
+		//	End Jorge Colmenarez
 		String address = "DIR: " + location.getAddress1() + ", " + (location.getAddress2() == null ? "" : location.getAddress2()+", ") + "\n"
 					+ 	(location.getAddress3() == null ? "" : location.getAddress3()+", ") + (location.getAddress4() == null ? "" : location.getAddress4()+", ");
 		String city = location.getCity() + ((location.getRegionName()==null || location.getRegionName()=="") ? "" : " - "+location.getRegionName());
@@ -427,15 +436,18 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			text = docNo + " " + salesRep + " " + payTerm;
 		}
 		else if(line == 2){
-			text = address.substring(0, address.length()-2);
+			text = tendertype;
 		}
 		else if(line == 3){
-			text = city;
+			text = address.substring(0, address.length()-2);
 		}
 		else if(line == 4){
-			text = phone;
+			text = city;
 		}
 		else if(line == 5){
+			text = phone;
+		}
+		else if(line == 6){
 			text = (invoiceAffected!="" ? invoiceAffected : "") + bpCode;
 		}
 		else{
@@ -483,6 +495,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	
 	private static String cleanName(String value){	
 		String name="";
+		value = value.substring(1, 80);
 		int size=value.length();
 		
 		 for (int i = 0; i < size; i++){ 
@@ -491,10 +504,47 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			 }else{
 				 name+= value.charAt(i);
 			 }		  		 
-		 }	
-	//	Support for Truncate string to 80 characters
-	//	modified by Jorge Colmenarez, 2017-09-05 16:00, jcolmenarez@frontuari.com, Frontuari, C.A.
-	return name.trim().substring(0, 80);
+		 }
+	return name.trim();
+	}
+	/**
+	 * Get Tender Type from Invoice
+	 * @author Jorge Colmenarez, 2017-09-16 11:11, jcolmenarez@frontuari.com, Frontuari, C.A.
+	 * @param int C_Invoice_ID
+	 * @return String TenderType
+	 */
+	public static String getTenderType(int Invoice_ID){
+		String tendertype = "";
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT string_agg(DISTINCT (SELECT rlt.Name FROM AD_Ref_List rl "
+				+ "INNER JOIN AD_Ref_List_Trl rlt ON rl.AD_Ref_List_ID = rlt.AD_Ref_List_ID "
+				+ "INNER JOIN AD_Reference r ON rl.AD_Reference_ID = r.AD_Reference_ID "
+				+ "INNER JOIN AD_Column c ON c.AD_Reference_Value_ID = r.AD_Reference_ID "
+				+ "INNER JOIN AD_Table t ON c.AD_Table_ID = t.AD_Table_ID "
+				+ "WHERE t.TableName = 'C_Payment' AND c.ColumnName = 'TenderType' AND rlt.AD_Language = 'es_CO' AND rl.Value = p.TenderType),', ') AS TenderType "
+				+ "FROM C_Payment p "
+				+ "INNER JOIN C_AllocationLine al ON p.C_Payment_ID = al.C_Payment_ID "
+				+ "INNER JOIN C_AllocationHdr ah ON al.C_AllocationHdr_ID = ah.C_AllocationHdr_ID "
+				+ "WHERE p.DocStatus = 'CO' AND ah.DocStatus = 'CO' "
+				+ "AND al.C_Invoice_ID = ?"); 
+		
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			ps = DB.prepareStatement(sql.toString(),null);
+			ps.setInt(1, Invoice_ID);
+			rs = ps.executeQuery();
+			while (rs.next())
+			{
+				tendertype = rs.getString("TenderType");
+			}
+		}catch(Exception e){
+			log.severe(e.getMessage());
+		} finally {
+			DB.close(rs, ps);
+			rs = null; ps = null;
+		}
+		return tendertype;
 	}
 
 }
