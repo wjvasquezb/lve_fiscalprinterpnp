@@ -495,7 +495,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	
 	private static String cleanName(String value){	
 		String name="";
-		value = value.substring(1, 80);
+		//	Truncate Name if Length > 80
+		if(value.length() > 80)
+			value = value.substring(1, 80);
 		int size=value.length();
 		
 		 for (int i = 0; i < size; i++){ 
