@@ -1,18 +1,19 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: LVE_FiscalPrinterPnP
-Bundle-SymbolicName: LVE_FiscalPrinterPnP;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Name: LVE Fiscal Printer PnP
+Bundle-SymbolicName: lve_fiscalprinterpnp;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: resources/PnP/jna-4.1.0.jar,
+ .
 Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
-Bundle-Vendor: Ing. Victor Suárez - victor.suarez.is@gmail.com
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.osgi.framework;version="1.3.0"
-Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/ProcessFactory.xml,
- OSGI-INF/ModelFactory.xml
+Export-Package: org.idempiere.component,
+ org.idempiere.model,
+ org.idempiere.process
 Require-Bundle: org.adempiere.base;bundle-version="3.1.0",
  org.adempiere.plugin.utils;bundle-version="3.1.0",
  org.adempiere.base.process;bundle-version="3.1.0"
-Bundle-ClassPath: resources/PnP/jna-4.1.0.jar,
- .
-Export-Package: org.idempiere.model
+Import-Package: org.osgi.framework;version="1.3.0"
+Service-Component: OSGI-INF/ProcessFactory.xml,OSGI-INF/ModelFactory.xml
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Vendor: Frontuari, C.A.

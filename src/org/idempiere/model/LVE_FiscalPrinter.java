@@ -378,25 +378,25 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			return "ERROR generando cierre parcial del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 1));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 1 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 1 (Nro Doc, Agente Comercial y Termino de Pago) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 2));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 2 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 2 (Formas de Pago) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 3));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 3 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 3 (Dirección) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 4));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 4 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 4 (Ciudad) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 5));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 5 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 5 (Teléfono) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 6));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 6 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 6 (Factura Afectada, Código Cliente) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 7));
 		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 7 al pie del Documento Fiscal - " + msg;
+			return "ERROR agregando Linea 7 (Nombre del Cliente) al pie del Documento Fiscal - " + msg;
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
@@ -516,7 +516,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	 * @return String TenderType
 	 */
 	public static String getTenderType(int Invoice_ID){
-		String tendertype = "";
+		String tendertype = null;
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT string_agg(DISTINCT (SELECT rlt.Name FROM AD_Ref_List rl "
 				+ "INNER JOIN AD_Ref_List_Trl rlt ON rl.AD_Ref_List_ID = rlt.AD_Ref_List_ID "
@@ -546,6 +546,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			DB.close(rs, ps);
 			rs = null; ps = null;
 		}
+		log.log(Level.INFO, tendertype);
 		return tendertype;
 	}
 
