@@ -501,7 +501,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	 * @return String TenderType
 	 */
 	public static String getTenderType(int Order_ID){
-		String tendertype = null;
+		String tendertype = "FP: ";
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT String_Agg(DISTINCT (CASE WHEN p.TenderType = 'K' THEN t.Value||': '||p.CheckNo ELSE t.Value END), ', ') AS TenderType "
 				+ "FROM C_POSPayment p "
