@@ -516,7 +516,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			rs = ps.executeQuery();
 			while (rs.next())
 			{
-				tendertype = rs.getString("TenderType");
+				tendertype = tendertype + rs.getString("TenderType");
 			}
 		}catch(Exception e){
 			log.severe(e.getMessage());
