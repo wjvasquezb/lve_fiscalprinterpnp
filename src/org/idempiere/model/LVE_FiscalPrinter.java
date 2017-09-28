@@ -370,9 +370,12 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 1));
 		if(!msg.equals("OK"))
 			return "ERROR agregando Linea 1 (Nro Doc, Agente Comercial y Termino de Pago) al pie del Documento Fiscal - " + msg;
-		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 2));
-		if(!msg.equals("OK"))
-			return "ERROR agregando Linea 2 (Formas de Pago) al pie del Documento Fiscal - " + msg;
+		//	Print when only is invoice and payment term is in cash
+		if(invoice.getC_PaymentTerm().getNetDays()==0 && docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARInvoice)){
+			msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 2));
+			if(!msg.equals("OK"))
+				return "ERROR agregando Linea 2 (Formas de Pago) al pie del Documento Fiscal - " + msg;	
+		}
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 3));
 		if(!msg.equals("OK"))
 			return "ERROR agregando Linea 3 (Dirección) al pie del Documento Fiscal - " + msg;
@@ -412,10 +415,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		}
 		//	Get Tender Type, Added by Jorge Colmenarez 2017-09-16 11:10
 		else if(line == 2){
-			if(invoice.getC_PaymentTerm().getNetDays() > 0)
-				text = "";
-			else
-				text = getTenderType(invoice.getC_Order_ID());
+			text = getTenderType(invoice.getC_Order_ID());
 		}
 		//	End Jorge Colmenarez
 		else if(line == 3){
