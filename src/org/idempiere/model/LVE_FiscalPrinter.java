@@ -120,7 +120,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 
 	@Override
 	public String modelChange(PO po, int type) throws Exception {
-		log.warning("------ Validating Model: " + po.get_TableName() + " with type: " + type);
 		
 		if(type != TYPE_AFTER_CHANGE && type != TYPE_AFTER_NEW) 
 			return null;
@@ -160,7 +159,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 
 	@Override
 	public String docValidate(PO po, int timing) {
-		log.warning("------ Validating Model docValidate: " + po.get_TableName() + " with timing: " + timing);
 		
 		if(timing == TIMING_BEFORE_COMPLETE) {
 			if(!po.get_TableName().equals(MInvoice.Table_Name))
@@ -168,7 +166,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			
 			MInvoice invoice = (MInvoice)po;
 			//	Print only when complete a document not reversal, added by Jorge Colmenarez, 2017-09-06 9:37
-			if(invoice.getReversal_ID() == 0){
+			if(invoice.getReversal_ID() == 0){					
 				MDocType docType = new MDocType(invoice.getCtx(), invoice.getC_DocType_ID(), invoice.get_TrxName());
 				
 				if(invoice.getGrandTotal().compareTo(Env.ZERO) == 0)
@@ -181,10 +179,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				
 				MBPartner partner = new MBPartner(invoice.getCtx(), invoice.getC_BPartner_ID(), invoice.get_TrxName());
 				String text = "Numero de Documento: " + invoice.getDocumentNo();
-//				if(partner.isManufacturer() && partner.getBPartner_Parent_ID() != 0) {
-//					partner = new MBPartner(invoice.getCtx(), partner.getBPartner_Parent_ID(), invoice.get_TrxName());
-//					invoice.set_ValueOfColumn("Bill_BPartner_ID", partner.getC_BPartner_ID());
-//				}
+				
 				invoiceInfo = printInvoice(partner, invoice, docType, text);
 				if(invoiceInfo.toUpperCase().contains("ERROR")) {
 					msg = invoiceInfo;
@@ -226,10 +221,11 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		
 		if(port == "" || port == null) 
 			return "ERROR - Debe seleccionar Puerto de Impresora Fiscal";
+		
 		msg = dllPnP.PFabrepuerto(String.valueOf(port));
 		if(!msg.equals("OK"))
 			return "ERROR abriendo Puerto Impresora - " + msg;
-		
+		log.info("Comprobando estado");
 		dllPnP.PFestatus("N");
 		status = dllPnP.PFultimo();
 		LVE_FiscalHour = status.split(",")[6].substring(0, 4);
@@ -244,7 +240,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		}
 		int LVE_FiscalDocNoStr = Integer.valueOf(status.split(",")[9]) + 1;
 		LVE_FiscalDocNo = String.format("%08d",LVE_FiscalDocNoStr);
-		
 
 		//	Variables for group product+price info
 		String OldDescPrice = "-1";
@@ -322,9 +317,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 			msg = dllPnP.PFDevolucion(name, taxID, invoiceAffectedNo, fiscalPrinter.getLVE_SerialFiscal(), date, hour);
 			if(!msg.equals("OK"))
 				return "ERROR abriendo Factura Fiscal - " + msg;
-//			msg = dllPnP.PFTfiscal(text);
-//			if(!msg.equals("OK"))
-//				return "ERROR agregando Ficha a la Factura Fiscal - " + msg;
 			/**	DATOS DE LA LINEA DE LA NOTA DE CREDITO	**/
 			for(MInvoiceLine invoiceLine : invoice.getLines()) {
 				String description = invoiceLine.getDescription();
@@ -372,7 +364,6 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		if(!msg.equals("OK"))
 			return "ERROR agregando Lineas - " + msg;
 		
-		
 		msg = dllPnP.PFparcial();
 		if(!msg.equals("OK"))
 			return "ERROR generando cierre parcial del Documento Fiscal - " + msg;
@@ -407,59 +398,53 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	}
 	
 	private static String getText(MBPartner partner, MInvoice invoice, MDocType docType, int line) {
-		String text;
-		MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
-		MLocation location = new MLocation(invoice.getCtx(), bpLocation.getC_Location_ID(), invoice.get_TrxName());
-		String docNo = "TR:"+LVE_FiscalDocNo;
-		MUser user = new MUser(invoice.getCtx(), invoice.getSalesRep_ID(), invoice.get_TrxName());
-		String salesRep = "Vd:" + user.getName();
-		String payTerm = "CP:CONTADO";
-		if(invoice.getC_PaymentTerm_ID() > 0) {
-			MPaymentTerm paymentTerm = new MPaymentTerm(invoice.getCtx(), invoice.getC_PaymentTerm_ID(), invoice.get_TrxName());
-			payTerm = "CP:"+paymentTerm.getName();
-		}
-		//	Get Tender Type, Added by Jorge Colmenarez 2017-09-16 11:10
-		String tendertype = getTenderType(invoice.getC_Invoice_ID());
-		//	End Jorge Colmenarez
-		String address = "DIR: " + location.getAddress1() + ", " + (location.getAddress2() == null ? "" : location.getAddress2()+", ") + "\n"
-					+ 	(location.getAddress3() == null ? "" : location.getAddress3()+", ") + (location.getAddress4() == null ? "" : location.getAddress4()+", ");
-		String city = location.getCity() + ((location.getRegionName()==null || location.getRegionName()=="") ? "" : " - "+location.getRegionName());
-		String phone = "TLF: " + (bpLocation.getPhone()==null ? "" : bpLocation.getPhone()) + (bpLocation.getPhone2()==null ? "" : " - " + bpLocation.getPhone2()); 
-		String invoiceAffected = "";
-		if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
-			MInvoice affected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
-			invoiceAffected = "Afecta Fc: " + affected.getDocumentNo()+" ";
-		}
-		String bpCode = "Cliente: " + partner.getValue();
-		String name = partner.getName();
+		String text; 
 		if(line == 1){
+			String docNo = "TR:"+LVE_FiscalDocNo;
+			MUser user = new MUser(invoice.getCtx(), invoice.getSalesRep_ID(), invoice.get_TrxName());
+			String salesRep = "Vd:" + user.getName();
+			String payTerm = "CP:CONTADO";
+			if(invoice.getC_PaymentTerm_ID() > 0) {
+				MPaymentTerm paymentTerm = new MPaymentTerm(invoice.getCtx(), invoice.getC_PaymentTerm_ID(), invoice.get_TrxName());
+				payTerm = "CP:"+paymentTerm.getName();
+			}
 			text = docNo + " " + salesRep + " " + payTerm;
 		}
+		//	Get Tender Type, Added by Jorge Colmenarez 2017-09-16 11:10
 		else if(line == 2){
-			text = tendertype;
+			text = getTenderType(invoice.getC_Order_ID());
 		}
+		//	End Jorge Colmenarez
 		else if(line == 3){
+			MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
+			MLocation location = new MLocation(invoice.getCtx(), bpLocation.getC_Location_ID(), invoice.get_TrxName());
+			String address = "DIR: " + location.getAddress1() + ", " + (location.getAddress2() == null ? "" : location.getAddress2()+", ") + "\n"
+						+ 	(location.getAddress3() == null ? "" : location.getAddress3()+", ") + (location.getAddress4() == null ? "" : location.getAddress4()+", ");
 			text = address.substring(0, address.length()-2);
 		}
 		else if(line == 4){
+			MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
+			MLocation location = new MLocation(invoice.getCtx(), bpLocation.getC_Location_ID(), invoice.get_TrxName());
+			String city = location.getCity() + ((location.getRegionName()==null || location.getRegionName()=="") ? "" : " - "+location.getRegionName());
 			text = city;
 		}
 		else if(line == 5){
+			MBPartnerLocation bpLocation = new MBPartnerLocation(invoice.getCtx(), invoice.getC_BPartner_Location_ID(), invoice.get_TrxName());
+			String phone = "TLF: " + (bpLocation.getPhone()==null ? "" : bpLocation.getPhone()) + (bpLocation.getPhone2()==null ? "" : " - " + bpLocation.getPhone2());
 			text = phone;
 		}
 		else if(line == 6){
+			String invoiceAffected = "";
+			if(docType.getDocBaseType().equals(MDocType.DOCBASETYPE_ARCreditMemo)){
+				MInvoice affected = new MInvoice(invoice.getCtx(), (int)invoice.get_ValueOfColumn(MColumn.getColumn_ID(MInvoice.Table_Name, "LVE_invoiceAffected_ID")), invoice.get_TrxName());
+				invoiceAffected = "Afecta Fc: " + affected.getDocumentNo()+" ";
+			}
+			String bpCode = "Cliente: " + partner.getValue();
 			text = (invoiceAffected!="" ? invoiceAffected : "") + bpCode;
 		}
 		else{
-			text = name;
+			text = partner.getName();
 		}
-		/*
-		 * Se comenta para imprimir el texto por cortes
-		String text = docNo + " " + salesRep + " " + payTerm + "\n"
-				+ address + "\n"
-				+ invoiceAffected + " " + bpCode + "\n"
-				+ name;
-		*/
 		log.log(Level.INFO, text);
 		return text;
 	}
@@ -515,26 +500,19 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	 * @param int C_Invoice_ID
 	 * @return String TenderType
 	 */
-	public static String getTenderType(int Invoice_ID){
+	public static String getTenderType(int Order_ID){
 		String tendertype = null;
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT string_agg(DISTINCT (SELECT rlt.Name FROM AD_Ref_List rl "
-				+ "INNER JOIN AD_Ref_List_Trl rlt ON rl.AD_Ref_List_ID = rlt.AD_Ref_List_ID "
-				+ "INNER JOIN AD_Reference r ON rl.AD_Reference_ID = r.AD_Reference_ID "
-				+ "INNER JOIN AD_Column c ON c.AD_Reference_Value_ID = r.AD_Reference_ID "
-				+ "INNER JOIN AD_Table t ON c.AD_Table_ID = t.AD_Table_ID "
-				+ "WHERE t.TableName = 'C_Payment' AND c.ColumnName = 'TenderType' AND rlt.AD_Language = 'es_CO' AND rl.Value = p.TenderType),', ') AS TenderType "
-				+ "FROM C_Payment p "
-				+ "INNER JOIN C_AllocationLine al ON p.C_Payment_ID = al.C_Payment_ID "
-				+ "INNER JOIN C_AllocationHdr ah ON al.C_AllocationHdr_ID = ah.C_AllocationHdr_ID "
-				+ "WHERE p.DocStatus = 'CO' AND ah.DocStatus = 'CO' "
-				+ "AND al.C_Invoice_ID = ?"); 
+		sql.append("SELECT String_Agg(DISTINCT (CASE WHEN p.TenderType = 'K' THEN t.Value||': '||p.CheckNo ELSE t.Value END), ', ') AS TenderType "
+				+ "FROM C_POSPayment p "
+				+ "INNER JOIN C_POSTenderType t ON p.C_POSTenderType_ID = t.C_POSTenderType_ID "
+				+ "WHERE p.C_Order_ID = ?"); 
 		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try{
 			ps = DB.prepareStatement(sql.toString(),null);
-			ps.setInt(1, Invoice_ID);
+			ps.setInt(1, Order_ID);
 			rs = ps.executeQuery();
 			while (rs.next())
 			{
