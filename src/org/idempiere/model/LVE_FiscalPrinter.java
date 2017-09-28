@@ -412,7 +412,10 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		}
 		//	Get Tender Type, Added by Jorge Colmenarez 2017-09-16 11:10
 		else if(line == 2){
-			text = getTenderType(invoice.getC_Order_ID());
+			if(invoice.getC_PaymentTerm().getNetDays() > 0)
+				text = "";
+			else
+				text = getTenderType(invoice.getC_Order_ID());
 		}
 		//	End Jorge Colmenarez
 		else if(line == 3){
