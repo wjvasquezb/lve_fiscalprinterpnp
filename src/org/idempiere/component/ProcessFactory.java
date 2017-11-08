@@ -3,6 +3,7 @@ package org.idempiere.component;
 import org.adempiere.base.IProcessFactory;
 import org.compiere.process.ProcessCall;
 import org.idempiere.process.LVE_CheckStatusFP;
+import org.idempiere.process.LVE_ClosePort;
 import org.idempiere.process.LVE_CloseX;
 import org.idempiere.process.LVE_CloseZ;
 import org.idempiere.process.LVE_GetFiscalInfo;
@@ -27,6 +28,9 @@ public class ProcessFactory implements IProcessFactory {
 	      if (className.equals(LVE_CheckStatusFP.class.getName())) {
 	        return new LVE_CheckStatusFP();
 	      }
+	      if (className.equals(LVE_ClosePort.class.getName())) {
+		        return new LVE_ClosePort();
+		      }
 	      return null;
 	  }
 }

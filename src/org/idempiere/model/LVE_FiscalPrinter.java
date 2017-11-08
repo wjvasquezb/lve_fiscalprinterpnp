@@ -259,7 +259,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
 					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
-					description = product.getName();
+					description = product.getValue()+" "+product.getName();
 				} 
 				if(invoiceLine.getC_Charge_ID() != 0) {
 					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
@@ -322,7 +322,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 				String description = invoiceLine.getDescription();
 				if(invoiceLine.getM_Product_ID() != 0) {
 					MProduct product = new MProduct(invoiceLine.getCtx(), invoiceLine.getM_Product_ID(), invoiceLine.get_TrxName());
-					description = product.getName();
+					description = product.getValue()+" "+product.getName();
 				} 
 				if(invoiceLine.getC_Charge_ID() != 0) {
 					MCharge charge = new MCharge(invoiceLine.getCtx(), invoiceLine.getC_Charge_ID(), invoiceLine.get_TrxName());
@@ -391,6 +391,23 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		msg = dllPnP.PFTfiscal(getText(partner, invoice, docType, 7));
 		if(!msg.equals("OK"))
 			return "ERROR agregando Linea 7 (Nombre del Cliente) al pie del Documento Fiscal - " + msg;
+		//	Soporte para coletilla impuesta por el SENIAT
+		msg = dllPnP.PFTfiscal("\"La base imponible esta sujeta a la");
+		if(!msg.equals("OK"))
+			return "ERROR agregando 1era parte de la coletilla del SENIAT - "+ msg;
+		msg = dllPnP.PFTfiscal("alicuota general del IVA del 12% con una");
+		if(!msg.equals("OK"))
+			return "ERROR agregando 2era parte de la coletilla del SENIAT - "+ msg;
+		msg = dllPnP.PFTfiscal("rebaja de la alicuota de 3% o 5% de");
+		if(!msg.equals("OK"))
+			return "ERROR agregando 3era parte de la coletilla del SENIAT - "+ msg;
+		msg = dllPnP.PFTfiscal("acuerdo a lo establecido en el Decreto");
+		if(!msg.equals("OK"))
+			return "ERROR agregando 4era parte de la coletilla del SENIAT - "+ msg;
+		msg = dllPnP.PFTfiscal("Nro 3.085\"");
+		if(!msg.equals("OK"))
+			return "ERROR agregando 5era parte de la coletilla del SENIAT - "+ msg;
+		//	Fin Coletilla del SENIAT
 		msg = dllPnP.PFtotal();
 		if(!msg.equals("OK"))
 			return "ERROR agregando Total al Documento Fiscal - " + msg;
@@ -483,9 +500,9 @@ public class LVE_FiscalPrinter implements ModelValidator {
 	
 	private static String cleanName(String value){	
 		String name="";
-		//	Truncate Name if Length > 80
-		if(value.length() > 80)
-			value = value.substring(1, 80);
+		//	Truncate Name if Length > 35
+		if(value.length() > 35)
+			value = value.substring(1, 35);
 		int size=value.length();
 		
 		 for (int i = 0; i < size; i++){ 
