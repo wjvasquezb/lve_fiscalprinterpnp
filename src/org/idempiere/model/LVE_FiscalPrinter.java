@@ -502,7 +502,7 @@ public class LVE_FiscalPrinter implements ModelValidator {
 		String name="";
 		//	Truncate Name if Length > 35
 		if(value.length() > 35)
-			value = value.substring(1, 35);
+			value = value.substring(0, 35);
 		int size=value.length();
 		
 		 for (int i = 0; i < size; i++){ 
